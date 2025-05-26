@@ -1,0 +1,87 @@
+@startuml
+!pragma layout smetana
+skinparam groupInheritance 2
+hide empty members
+
+
+class geometric_representation_item {
+}
+
+class volume {
+  +position : axis2_placement_3d
+}
+
+class block_volume {
+  +x : positive_length_measure
+  +y : positive_length_measure
+  +z : positive_length_measure
+}
+
+class wedge_volume {
+  +x : positive_length_measure
+  +y : positive_length_measure
+  +z : positive_length_measure
+  +ltx : length_measure
+}
+
+class pyramid_volume {
+  +xlength : positive_length_measure
+  +ylength : positive_length_measure
+  +height : positive_length_measure
+}
+
+class tetrahedron_volume {
+  +point_1 : cartesian_point
+  +point_2 : cartesian_point
+  +point_3 : cartesian_point
+  +point_4 : cartesian_point
+}
+
+class hexahedron_volume {
+  +points : LIST[8:8] OF cartesian_point
+}
+
+class spherical_volume {
+  +radius : positive_length_measure
+}
+
+class cylindrical_volume {
+  +radius : positive_length_measure
+  +height : positive_length_measure
+}
+
+class eccentric_conical_volume {
+  +semi_axis_1 : positive_length_measure
+  +semi_axis_2 : positive_length_measure
+  +height : positive_length_measure
+  +x_offset : length_measure
+  +y_offset : length_measure
+  +ratio : REAL
+}
+
+class toroidal_volume {
+  +major_radius : positive_length_measure
+  +minor_radius : positive_length_measure
+}
+
+class ellipsoid_volume {
+  +semi_axis_1 : positive_length_measure
+  +semi_axis_2 : positive_length_measure
+  +semi_axis_3 : positive_length_measure
+}
+
+' Наследование
+geometric_representation_item <|-- volume
+
+volume <|-- block_volume
+volume <|-- wedge_volume
+volume <|-- pyramid_volume
+volume <|-- tetrahedron_volume
+volume <|-- hexahedron_volume
+volume <|-- spherical_volume
+volume <|-- cylindrical_volume
+volume <|-- eccentric_conical_volume
+volume <|-- toroidal_volume
+volume <|-- ellipsoid_volume
+
+@enduml

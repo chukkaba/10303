@@ -1,0 +1,121 @@
+(*
+$Id: configuration_management_schema.exp,v 1.14 2017/10/09 12:26:21 verodub Exp $
+ISO 10303 TC184/SC4/WG12 N9736
+
+EXPRESS Source:
+ISO 10303-44 ed4 Product structure configuration - Configuration management schema
+
+The following permission notice and disclaimer shall be included in all copies of this EXPRESS schema ("the Schema"), 
+and derivations of the Schema:
+
+Copyright ISO 2017  All rights reserved
+Permission is hereby granted, free of charge in perpetuity, to any person obtaining a copy of the Schema,
+to use, copy, modify, merge and distribute free of charge, copies of the Schema for the purposes of developing, 
+implementing, installing and using software based on the Schema, and to permit persons to whom the Schema is furnished to do so, 
+subject to the following conditions:
+
+THE SCHEMA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCHEMA OR THE 
+USE OR OTHER DEALINGS IN THE SCHEMA.
+
+In addition, any modified copy of the Schema shall include the following notice:
+
+THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN
+ISO 10303-44 ed4 Product structure configuration - Configuration management schema
+AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD
+*)
+
+SCHEMA configuration_management_schema '{iso standard 10303 part(44) version(4) object(1) configuration_management_schema(3)}';
+
+    REFERENCE FROM basic_attribute_schema   -- ISO 10303-41
+    (description_attribute_select,
+     get_description_value,
+     get_name_value,
+     name_attribute_select);
+     
+  REFERENCE FROM effectivity_schema (   -- ISO 10303-41
+    effectivity);
+   
+   REFERENCE FROM product_concept_schema   -- ISO 10303-44
+    (product_concept,
+     product_concept_feature_association);
+     
+  REFERENCE FROM product_definition_schema   -- ISO 10303-41
+    (product_definition,
+     product_definition_effectivity,
+     product_definition_formation);
+
+  REFERENCE FROM product_structure_schema   -- ISO 10303-44
+    (product_definition_occurrence,
+     product_definition_usage);
+
+  REFERENCE FROM support_resource_schema   -- ISO 10303-41
+    (bag_to_set,
+     identifier,
+     label,
+     text);
+    
+  TYPE cms_description_attribute_select = SELECT BASED_ON description_attribute_select WITH (
+    configuration_design);
+  END_TYPE;
+  TYPE cms_name_attribute_select = SELECT BASED_ON name_attribute_select WITH (
+    configuration_design);
+  END_TYPE;
+
+TYPE configuration_design_item = SELECT
+   (product_definition,
+    product_definition_formation,
+    product_definition_occurrence);
+END_TYPE;
+
+ENTITY configurable_item
+  SUBTYPE OF (configuration_item);
+  item_concept_feature : SET[1:?] OF product_concept_feature_association;
+END_ENTITY;
+
+ENTITY configuration_design;
+  configuration : configuration_item;
+  design        : configuration_design_item;
+DERIVE
+  name          : label := get_name_value (SELF);
+  description   : text := get_description_value (SELF);
+UNIQUE
+  UR1: configuration, design;
+WHERE
+  WR1: SIZEOF (USEDIN (SELF, 'BASIC_ATTRIBUTE_SCHEMA.' +
+                             'NAME_ATTRIBUTE.NAMED_ITEM')) <= 1;
+  WR2: SIZEOF (USEDIN (SELF, 'BASIC_ATTRIBUTE_SCHEMA.' +
+                             'DESCRIPTION_ATTRIBUTE.DESCRIBED_ITEM')) <= 1;
+END_ENTITY;
+
+ENTITY configuration_effectivity
+  SUBTYPE OF (product_definition_effectivity);
+  configuration : configuration_design;
+UNIQUE
+  UR1: configuration,
+       SELF\product_definition_effectivity.usage,
+       SELF\effectivity.id;
+WHERE
+  WR1: 'PRODUCT_STRUCTURE_SCHEMA.PRODUCT_DEFINITION_USAGE' IN
+        TYPEOF (SELF\product_definition_effectivity.usage);
+END_ENTITY;
+
+ENTITY configuration_item;
+   id                  :  identifier;
+   name                :  label;
+   description         :  OPTIONAL text;
+   item_concept        :  product_concept;
+   purpose             :  OPTIONAL label;
+END_ENTITY;
+
+ENTITY configuration_item_relationship;
+  name                        : label;
+  description                 : OPTIONAL text;
+  relating_configuration_item : configuration_item;
+  related_configuration_item  : configuration_item;
+END_ENTITY;
+
+END_SCHEMA; -- configuration_management_schema

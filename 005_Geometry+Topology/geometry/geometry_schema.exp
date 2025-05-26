@@ -1,0 +1,1242 @@
+
+(*ISO 10303 TC184/SC4/WG12 N11415 
+
+EXPRESS Source:
+ISO 10303-42 ed8 Geometric and topological representation - Geometry schema*)
+
+
+SCHEMA geometry_schema '{iso standard 10303 part(42) version(13) object(1) geometry_schema(1)}';
+
+(* REFERENCE FROM geometric_model_schema   -- ISO 10303-42
+  (block,
+   boolean_result,
+   cyclide_segment_solid,
+   eccentric_cone,
+   edge_based_wireframe_model,
+   ellipsoid,
+   face_based_surface_model,
+   faceted_primitive,
+   geometric_set,
+   half_space_solid,
+   primitive_2d,
+   rectangular_pyramid,
+   right_angular_wedge,
+   right_circular_cone,
+   right_circular_cylinder,
+   shell_based_surface_model,
+   shell_based_wireframe_model,
+   solid_model,
+   sphere,
+   tessellated_item,
+   torus); 
+   
+REFERENCE FROM measure_schema   -- ISO 10303-41
+  (global_unit_assigned_context,
+   length_measure,
+   parameter_value,
+   plane_angle_measure,
+   plane_angle_unit,
+   positive_length_measure,
+   positive_plane_angle_measure); 
+   
+REFERENCE FROM representation_schema   -- ISO 10303-43
+  (definitional_representation,
+   founded_item,
+   functionally_defined_transformation,
+   item_in_context,
+   representation,
+   representation_context,
+   representation_item,
+   using_representations); 
+
+REFERENCE FROM scan_data_3d_shape_model_schema    -- ISO 10303-42 
+  (scanned_data_item);
+  
+
+REFERENCE FROM topology_schema   -- ISO 10303-42
+  (edge_curve,
+   face_surface,
+   poly_loop,
+   vertex_point,
+   volume_with_faces); 
+
+CONSTANT
+  dummy_gri : geometric_representation_item := representation_item('')|| geometric_representation_item(); 
+END_CONSTANT; 
+
+TYPE axis2_placement = SELECT
+   (axis2_placement_2d, 
+    axis2_placement_3d);
+END_TYPE; 
+
+TYPE b_spline_curve_form = ENUMERATION OF 
+   (polyline_form,
+    circular_arc,
+    elliptic_arc,
+    parabolic_arc,
+    hyperbolic_arc,
+    unspecified);
+END_TYPE; 
+
+TYPE b_spline_surface_form = ENUMERATION OF 
+   (plane_surf,
+    cylindrical_surf,
+    conical_surf,
+    spherical_surf,
+    toroidal_surf,
+    surf_of_revolution,
+    ruled_surf,
+    generalised_cone,
+    quadric_surf,
+    surf_of_linear_extrusion,
+    unspecified);
+END_TYPE; 
+
+TYPE curve_on_surface = SELECT
+   (composite_curve_on_surface, 
+    pcurve, 
+    surface_curve);
+END_TYPE; 
+
+TYPE dimension_count = INTEGER;
+WHERE
+  WR1: SELF > 0;
+END_TYPE; 
+
+TYPE extent_enumeration = ENUMERATION OF 
+   (invalid,
+    zero,
+    finite_non_zero,
+    infinite);
+END_TYPE; 
+
+TYPE knot_type = ENUMERATION OF 
+   (uniform_knots,
+    quasi_uniform_knots,
+    piecewise_bezier_knots,
+    unspecified);
+END_TYPE; 
+
+TYPE pcurve_or_surface = SELECT
+   (pcurve, 
+    surface);
+END_TYPE; 
+
+TYPE preferred_surface_curve_representation = ENUMERATION OF 
+   (curve_3d,
+    pcurve_s1,
+    pcurve_s2);
+END_TYPE; 
+
+TYPE surface_boundary = SELECT
+   (boundary_curve, 
+    degenerate_pcurve);
+END_TYPE; 
+
+TYPE transition_code = ENUMERATION OF 
+   (discontinuous,
+    continuous,
+    cont_same_gradient,
+    cont_same_gradient_same_curvature);
+END_TYPE; 
+
+TYPE trimming_preference = ENUMERATION OF 
+   (cartesian,
+    parameter,
+    unspecified);
+END_TYPE; 
+
+TYPE trimming_select = SELECT
+   (cartesian_point, 
+    parameter_value);
+END_TYPE; 
+
+TYPE vector_or_direction = SELECT
+   (direction, 
+    vector);
+END_TYPE; 
+
+
+TYPE locally_refined_spline_type_enum = ENUMERATION OF 
+  (analysis_suitable_t_spline, 
+  hierarchical_b_spline, 
+  lr_b_spline, 
+  semi_standard_t_spline, 
+  standard_t_spline); 
+END_TYPE; 
+
+TYPE linearly_independent_enum = ENUMERATION OF 
+  (independent, 
+  not_independent, 
+  not_tested);
+END_TYPE;
+
+TYPE spline_knot_values = LIST [2: ?] OF REAL; 
+WHERE 
+WR1 : increasing_values_in_list(SELF);
+END_TYPE;*)
+
+ENTITY geometric_representation_context
+  SUBTYPE OF (representation_context);
+  coordinate_space_dimension : dimension_count;
+END_ENTITY;
+
+ENTITY geometric_representation_item
+  SUBTYPE OF (representation_item);
+DERIVE
+  dim : dimension_count := dimension_of(SELF);
+WHERE
+  WR1: SIZEOF (QUERY (using_rep <* using_representations (SELF) | NOT ('GEOMETRY_SCHEMA.GEOMETRIC_REPRESENTATION_CONTEXT' IN TYPEOF (using_rep.context_of_items)))) = 0;
+END_ENTITY;
+
+(*SUBTYPE_CONSTRAINT gs_gri_subtypes FOR geometric_representation_item;
+(ONEOF (block,
+        boolean_result,
+        cartesian_transformation_operator,
+        curve,
+        cyclide_segment_solid,
+        direction,
+        edge_based_wireframe_model,
+        edge_curve,
+        ellipsoid,
+        face_based_surface_model,
+        face_surface,
+        faceted_primitive,
+        geometric_set,
+        half_space_solid,
+        placement,
+        point,
+        poly_loop,
+        primitive_2d,
+        rectangular_pyramid,
+        right_angular_wedge,
+        right_circular_cone,
+        right_circular_cylinder,
+        scanned_data_item,
+        shell_based_surface_model,
+        shell_based_wireframe_model,
+        solid_model,
+        sphere,
+        surface,
+        tessellated_item,
+        torus,
+        vector,
+        vertex_point,
+        volume));
+END_SUBTYPE_CONSTRAINT;*)
+
+ENTITY point
+  SUPERTYPE OF (ONEOF (cartesian_point,
+                       point_on_curve,
+                       point_on_surface,
+                       point_in_volume,
+                       point_replica,
+                       degenerate_pcurve))
+  SUBTYPE OF (geometric_representation_item);
+END_ENTITY;
+
+ENTITY cartesian_point
+  SUPERTYPE OF (ONEOF (cylindrical_point,
+                       polar_point,
+                       spherical_point))
+  SUBTYPE OF (point);
+  coordinates : LIST[1:3] OF length_measure;
+END_ENTITY;
+
+(*ENTITY cylindrical_point
+  SUBTYPE OF (cartesian_point);
+  r : length_measure;
+  theta : plane_angle_measure;
+  z : length_measure;
+DERIVE
+  SELF\cartesian_point.coordinates : LIST[3:3] OF length_measure := [r*cos(theta), r*sin(theta), z];
+WHERE
+  WR1: r >= 0.0;
+  --IP1:
+END_ENTITY;
+
+ENTITY spherical_point
+  SUBTYPE OF (cartesian_point);
+  r : length_measure;
+  theta : plane_angle_measure;
+  phi : plane_angle_measure;
+DERIVE
+  SELF\cartesian_point.coordinates : LIST[3:3] OF length_measure := [r*sin(theta)*cos(phi), r*sin(theta)*sin(phi), r*cos(theta)];
+WHERE
+  WR1: r >= 0.0;
+  --IP1:
+  --IP2:
+END_ENTITY;
+
+ENTITY polar_point
+  SUBTYPE OF (cartesian_point);
+  r : length_measure;
+  theta : plane_angle_measure;
+DERIVE
+  SELF\cartesian_point.coordinates : LIST[2:2] OF length_measure := [r*cos(theta), r*sin(theta)];
+WHERE
+  WR1: r >= 0.0;
+  --IP1:
+END_ENTITY;*)
+
+ENTITY point_on_curve
+  SUBTYPE OF (point);
+  basis_curve : curve;
+  point_parameter : parameter_value;
+  --IP1:
+END_ENTITY;
+
+ENTITY point_on_surface
+  SUBTYPE OF (point);
+  basis_surface : surface;
+  point_parameter_u : parameter_value;
+  point_parameter_v : parameter_value;
+  --IP1:
+END_ENTITY;
+
+(*ENTITY point_in_volume
+  SUBTYPE OF (point);
+  basis_volume : volume;
+  point_parameter_u : parameter_value;
+  point_parameter_v : parameter_value;
+  point_parameter_w : parameter_value;
+  --IP1:
+END_ENTITY;
+
+ENTITY point_replica
+  SUBTYPE OF (point);
+  parent_pt : point;
+  transformation : cartesian_transformation_operator;
+WHERE
+  WR1: transformation.dim = parent_pt.dim;
+  WR2: acyclic_point_replica (SELF,parent_pt);
+END_ENTITY;
+
+ENTITY degenerate_pcurve
+  SUBTYPE OF (point);
+  basis_surface : surface;
+  reference_to_curve : definitional_representation;
+WHERE
+  WR1: SIZEOF(reference_to_curve\representation.items) = 1;
+  WR2: 'GEOMETRY_SCHEMA.CURVE' IN TYPEOF (reference_to_curve\representation.items[1]);
+  WR3: reference_to_curve\representation. items[1]\geometric_representation_item.dim =2;
+  --IP1:
+END_ENTITY;
+
+ENTITY evaluated_degenerate_pcurve
+  SUBTYPE OF (degenerate_pcurve);
+  equivalent_point : cartesian_point;
+END_ENTITY;
+
+ENTITY direction
+  SUBTYPE OF (geometric_representation_item);
+  direction_ratios : LIST[2:3] OF REAL;
+WHERE
+  WR1: SIZEOF(QUERY(tmp <* direction_ratios | tmp <> 0.0)) > 0;
+END_ENTITY;*)
+
+ENTITY vector
+  SUBTYPE OF (geometric_representation_item);
+  orientation : direction;
+  magnitude : length_measure;
+WHERE
+  WR1: magnitude >= 0.0;
+END_ENTITY;
+
+ENTITY placement
+  SUPERTYPE OF (ONEOF (axis1_placement,
+                       axis2_placement_2d,
+                       axis2_placement_3d))
+  SUBTYPE OF (geometric_representation_item);
+  location : cartesian_point;
+END_ENTITY;
+
+ENTITY axis1_placement
+  SUBTYPE OF (placement);
+  axis : OPTIONAL direction;
+DERIVE
+  z : direction := NVL(normalise(axis), dummy_gri || direction([0.0,0.0,1.0]));
+WHERE
+  WR1: SELF\geometric_representation_item.dim = 3;
+END_ENTITY;
+
+ENTITY axis2_placement_2d
+  SUBTYPE OF (placement);
+  ref_direction : OPTIONAL direction;
+DERIVE
+  p : LIST[2:2] OF direction := build_2axes(ref_direction);
+WHERE
+  WR1: SELF\geometric_representation_item.dim = 2;
+END_ENTITY;
+
+ENTITY axis2_placement_3d
+  SUBTYPE OF (placement);
+  axis : OPTIONAL direction;
+  ref_direction : OPTIONAL direction;
+DERIVE
+  p : LIST[3:3] OF direction := build_axes(axis,ref_direction);
+WHERE
+  WR1: SELF\placement.location.dim = 3;
+  WR2: (NOT (EXISTS (axis))) OR (axis.dim = 3);
+  WR3: (NOT (EXISTS (ref_direction))) OR (ref_direction.dim = 3);
+  WR4: (NOT (EXISTS (axis))) OR (NOT (EXISTS (ref_direction))) OR (cross_product(axis,ref_direction).magnitude > 0.0);
+END_ENTITY;
+
+ENTITY cartesian_transformation_operator
+  SUPERTYPE OF (ONEOF (cartesian_transformation_operator_2d,
+                       cartesian_transformation_operator_3d))
+  SUBTYPE OF (geometric_representation_item, functionally_defined_transformation);
+  axis1 : OPTIONAL direction;
+  axis2 : OPTIONAL direction;
+  local_origin : cartesian_point;
+  scale : OPTIONAL REAL;
+DERIVE
+  scl : REAL := NVL(scale, 1.0);
+WHERE
+  WR1: scl > 0.0;
+END_ENTITY;
+
+ENTITY cartesian_transformation_operator_3d
+  SUBTYPE OF (cartesian_transformation_operator);
+  axis3 : OPTIONAL direction;
+DERIVE
+  u : LIST[3:3] OF direction := base_axis(3,SELF\cartesian_transformation_operator.axis1, SELF\cartesian_transformation_operator.axis2,axis3);
+WHERE
+  WR1: SELF\geometric_representation_item.dim = 3;
+END_ENTITY;
+
+ENTITY cartesian_transformation_operator_2d
+  SUBTYPE OF (cartesian_transformation_operator);
+DERIVE
+  u : LIST[2:2] OF direction := base_axis(2,SELF\cartesian_transformation_operator.axis1, SELF\cartesian_transformation_operator.axis2,?);
+WHERE
+  WR1: SELF\geometric_representation_item.dim = 2;
+END_ENTITY;
+
+ENTITY curve
+  SUPERTYPE OF (ONEOF (line,
+                       conic,
+                       clothoid,
+                       circular_involute,
+                       pcurve,
+                       surface_curve,
+                       offset_curve_2d,
+                       offset_curve_3d,
+                       curve_replica))
+  SUBTYPE OF (geometric_representation_item);
+  --IP1:
+  --IP2:
+  --IP3:
+END_ENTITY;
+
+ENTITY line
+  SUBTYPE OF (curve);
+  pnt : cartesian_point;
+  dir : vector;
+WHERE
+  WR1: dir.dim = pnt.dim;
+END_ENTITY;
+
+ENTITY conic
+  SUPERTYPE OF (ONEOF (circle,
+                       ellipse,
+                       hyperbola,
+                       parabola))
+  SUBTYPE OF (curve);
+  position : axis2_placement;
+END_ENTITY;
+
+ENTITY circle
+  SUBTYPE OF (conic);
+  radius : positive_length_measure;
+END_ENTITY;
+
+ENTITY ellipse
+  SUBTYPE OF (conic);
+  semi_axis_1 : positive_length_measure;
+  semi_axis_2 : positive_length_measure;
+END_ENTITY;
+
+ENTITY hyperbola
+  SUBTYPE OF (conic);
+  semi_axis : positive_length_measure;
+  semi_imag_axis : positive_length_measure;
+END_ENTITY;
+
+ENTITY parabola
+  SUBTYPE OF (conic);
+  focal_dist : length_measure;
+WHERE
+  WR1: focal_dist <> 0.0;
+END_ENTITY;
+
+(*ENTITY clothoid
+  SUBTYPE OF (curve);
+  position : axis2_placement;
+  clothoid_constant : length_measure;
+END_ENTITY;
+
+ENTITY circular_involute
+  SUBTYPE OF (curve);
+  position : axis2_placement;
+  base_radius : positive_length_measure;
+END_ENTITY;*)
+
+ENTITY bounded_curve
+  SUPERTYPE OF (ONEOF (polyline,
+                       b_spline_curve,
+                       trimmed_curve,
+                       bounded_pcurve,
+                       bounded_surface_curve,
+                       composite_curve,
+                       locally_refined_spline_curve))
+  SUBTYPE OF (curve);
+  --IP1:
+  --IP2:
+END_ENTITY;
+
+ENTITY polyline
+  SUBTYPE OF (bounded_curve);
+  points : LIST[2:?] OF cartesian_point;
+END_ENTITY;
+
+ENTITY b_spline_curve
+  SUPERTYPE OF (ONEOF (uniform_curve,
+                       b_spline_curve_with_knots,
+                       quasi_uniform_curve,
+                       bezier_curve)
+               ANDOR rational_b_spline_curve)
+  SUBTYPE OF (bounded_curve);
+  degree : INTEGER;
+  control_points_list : LIST[2:?] OF cartesian_point;
+  curve_form : b_spline_curve_form;
+  closed_curve : LOGICAL;
+  self_intersect : LOGICAL;
+DERIVE
+  upper_index_on_control_points : INTEGER := (SIZEOF(control_points_list) - 1);
+  control_points : ARRAY[0:upper_index_on_control_points] OF cartesian_point := list_to_array(control_points_list,0, upper_index_on_control_points);
+WHERE
+  WR1: ('GEOMETRY_SCHEMA.UNIFORM_CURVE' IN TYPEOF(self)) OR ('GEOMETRY_SCHEMA.QUASI_UNIFORM_CURVE' IN TYPEOF(self)) OR ('GEOMETRY_SCHEMA.BEZIER_CURVE' IN TYPEOF(self)) OR ('GEOMETRY_SCHEMA.B_SPLINE_CURVE_WITH_KNOTS' IN TYPEOF(self));
+END_ENTITY;
+
+(*ENTITY b_spline_curve_with_knots
+  SUBTYPE OF (b_spline_curve);
+  knot_multiplicities : LIST[2:?] OF INTEGER;
+  knots : LIST[2:?] OF parameter_value;
+  knot_spec : knot_type;
+DERIVE
+  upper_index_on_knots : INTEGER := SIZEOF(knots);
+WHERE
+  WR1: constraints_param_b_spline(SELF.degree, upper_index_on_knots, upper_index_on_control_points, knot_multiplicities, knots);
+  WR2: SIZEOF(knot_multiplicities) = upper_index_on_knots;
+END_ENTITY;
+
+ENTITY uniform_curve
+  SUBTYPE OF (b_spline_curve);
+END_ENTITY;
+
+ENTITY quasi_uniform_curve
+  SUBTYPE OF (b_spline_curve);
+END_ENTITY;
+
+ENTITY bezier_curve
+  SUBTYPE OF (b_spline_curve);
+END_ENTITY;*)
+
+ENTITY rational_b_spline_curve
+  SUBTYPE OF (b_spline_curve);
+  weights_data : LIST[2:?] OF REAL;
+DERIVE
+  weights : ARRAY[0:upper_index_on_control_points] OF REAL := list_to_array(weights_data,0, upper_index_on_control_points);
+WHERE
+  WR1: SIZEOF(weights_data) = SIZEOF(SELF\b_spline_curve. control_points_list);
+  WR2: curve_weights_positive(SELF);
+END_ENTITY;
+
+(*ENTITY local_b_spline
+  SUBTYPE OF(representation_item);
+  degree : INTEGER;
+  knots : LIST [2:?] OF INTEGER;
+  multiplicities : LIST [2:?] OF INTEGER;
+WHERE
+  WR1 : degree > 0;
+  WR2 : SIZEOF(knots) = SIZEOF(multiplicities);
+  WR3 : constraints_param_local_b_spline(degree, knots, multiplicities);
+END_ENTITY;
+
+ENTITY locally_refined_spline_curve
+SUBTYPE OF(bounded_curve);
+ b_splines : LIST [2:?] OF local_b_spline;
+ knot_values                    : spline_knot_values;
+ control_points_list : LIST [2:?] OF cartesian_point;
+ scaling_factors            : LIST [2:?] OF REAL;
+ closed_curve : LOGICAL;
+ locally_refined_spline_type : locally_refined_spline_type_enum;
+ self_intersect : LOGICAL;
+ domain : LIST [2:2] OF REAL;
+WHERE
+ WR1 : SIZEOF(b_splines) = SIZEOF(control_points_list);
+ WR2 : SIZEOF(scaling_factors) = SIZEOF(control_points_list);
+ WR3 : constraints_scaling(scaling_factors);
+END_ENTITY;
+
+ENTITY rational_locally_refined_spline_curve
+SUBTYPE OF(locally_refined_spline_curve);
+ weights_data : LIST [2:?] OF REAL;
+WHERE
+  WR1 : SIZEOF(weights_data) = SIZEOF(SELF\locally_refined_spline_curve.control_points_list);
+  WR2 : weights_positive(weights_data);
+END_ENTITY;*)
+
+ENTITY trimmed_curve
+  SUBTYPE OF (bounded_curve);
+  basis_curve : curve;
+  trim_1 : SET[1:2] OF trimming_select;
+  trim_2 : SET[1:2] OF trimming_select;
+  sense_agreement : BOOLEAN;
+  master_representation : trimming_preference;
+WHERE
+  WR1: (HIINDEX(trim_1) = 1) OR (TYPEOF(trim_1[1]) <> TYPEOF(trim_1[2]));
+  WR2: (HIINDEX(trim_2) = 1) OR (TYPEOF(trim_2[1]) <> TYPEOF(trim_2[2]));
+  --IP1:
+  --IP2:
+  --IP3:
+  --IP4:
+  --IP5:
+END_ENTITY;
+
+(*ENTITY composite_curve
+  SUBTYPE OF (bounded_curve);
+  segments : LIST[1:?] OF composite_curve_segment;
+  self_intersect : LOGICAL;
+DERIVE
+  n_segments : INTEGER := SIZEOF(segments);
+  closed_curve : LOGICAL := segments[n_segments].transition <> discontinuous;
+WHERE
+  WR1: ((NOT closed_curve) AND (SIZEOF(QUERY(temp <* segments | temp.transition = discontinuous)) = 1)) OR ((closed_curve) AND (SIZEOF(QUERY(temp <* segments | temp.transition = discontinuous)) = 0));
+END_ENTITY;
+
+ENTITY composite_curve_segment
+  SUBTYPE OF (founded_item);
+  transition : transition_code;
+  same_sense : BOOLEAN;
+  parent_curve : curve;
+INVERSE
+  using_curves : BAG[1:?] OF composite_curve FOR segments;
+WHERE
+  WR1: ('GEOMETRY_SCHEMA.BOUNDED_CURVE' IN TYPEOF(parent_curve));
+END_ENTITY;
+
+ENTITY reparametrised_composite_curve_segment
+  SUBTYPE OF (composite_curve_segment);
+  param_length : parameter_value;
+WHERE
+  WR1: param_length > 0.0;
+END_ENTITY;*)
+
+ENTITY pcurve
+  SUBTYPE OF (curve);
+  basis_surface : surface;
+  reference_to_curve : definitional_representation;
+WHERE
+  WR1: SIZEOF(reference_to_curve\representation.items) = 1;
+  WR2: 'GEOMETRY_SCHEMA.CURVE' IN TYPEOF (reference_to_curve\representation.items[1]);
+  WR3: reference_to_curve\representation.items[1]\geometric_representation_item.dim = 2;
+END_ENTITY;
+
+ENTITY bounded_pcurve
+  SUBTYPE OF (pcurve, bounded_curve);
+WHERE
+  WR1: ('GEOMETRY_SCHEMA.BOUNDED_CURVE' IN TYPEOF(SELF\pcurve.reference_to_curve.items[1]));
+END_ENTITY;
+
+ENTITY surface_curve
+  SUPERTYPE OF (ONEOF (intersection_curve,
+                       seam_curve)
+               ANDOR bounded_surface_curve)
+  SUBTYPE OF (curve);
+  curve_3d : curve;
+  associated_geometry : LIST[1:2] OF pcurve_or_surface;
+  master_representation : preferred_surface_curve_representation;
+DERIVE
+  basis_surface : SET[1:2] OF surface := get_basis_surface(SELF);
+WHERE
+  WR1: curve_3d.dim = 3;
+  WR2: ('GEOMETRY_SCHEMA.PCURVE' IN TYPEOF(associated_geometry[1])) OR (master_representation <> pcurve_s1);
+  WR3: ('GEOMETRY_SCHEMA.PCURVE' IN TYPEOF(associated_geometry[2])) OR (master_representation <> pcurve_s2);
+  WR4: NOT ('GEOMETRY_SCHEMA.PCURVE' IN TYPEOF(curve_3d));
+  --IP1:
+  --IP2:
+END_ENTITY;
+
+ENTITY intersection_curve
+  SUBTYPE OF (surface_curve);
+WHERE
+  WR1: SIZEOF(SELF\surface_curve.associated_geometry) = 2;
+  WR2: associated_surface(SELF\surface_curve.associated_geometry[1]) <> associated_surface(SELF\surface_curve.associated_geometry[2]);
+END_ENTITY;
+
+ENTITY seam_curve
+  SUBTYPE OF (surface_curve);
+WHERE
+  WR1: SIZEOF(SELF\surface_curve.associated_geometry) = 2;
+  WR2: associated_surface(SELF\surface_curve.associated_geometry[1]) = associated_surface(SELF\surface_curve.associated_geometry[2]);
+  WR3: 'GEOMETRY_SCHEMA.PCURVE' IN TYPEOF(SELF\surface_curve.associated_geometry[1]);
+  WR4: 'GEOMETRY_SCHEMA.PCURVE' IN TYPEOF(SELF\surface_curve.associated_geometry[2]);
+END_ENTITY;
+
+ENTITY bounded_surface_curve
+  SUBTYPE OF (surface_curve, bounded_curve);
+WHERE
+  WR1: ('GEOMETRY_SCHEMA.BOUNDED_CURVE' IN TYPEOF(SELF\surface_curve.curve_3d));
+END_ENTITY;
+
+(*ENTITY composite_curve_on_surface
+  SUPERTYPE OF (boundary_curve)
+  SUBTYPE OF (composite_curve);
+DERIVE
+  basis_surface : SET[0:2] OF surface := get_basis_surface(SELF);
+WHERE
+  WR1: SIZEOF(basis_surface) > 0;
+  WR2: constraints_composite_curve_on_surface(SELF);
+  --IP1:
+END_ENTITY;*)
+
+ENTITY offset_curve_2d
+  SUBTYPE OF (curve);
+  basis_curve : curve;
+  distance : length_measure;
+  self_intersect : LOGICAL;
+WHERE
+  WR1: basis_curve.dim = 2;
+END_ENTITY;
+
+(*ENTITY offset_curve_3d
+  SUBTYPE OF (curve);
+  basis_curve : curve;
+  distance : length_measure;
+  self_intersect : LOGICAL;
+  ref_direction : direction;
+WHERE
+  WR1: (basis_curve.dim = 3) AND (ref_direction.dim = 3);
+  --IP1:
+END_ENTITY;*)
+
+ENTITY curve_replica
+  SUBTYPE OF (curve);
+  parent_curve : curve;
+  transformation : cartesian_transformation_operator;
+WHERE
+  WR1: transformation.dim = parent_curve.dim;
+  WR2: acyclic_curve_replica (SELF, parent_curve);
+END_ENTITY;
+
+ENTITY surface
+  SUPERTYPE OF (ONEOF (elementary_surface,
+                       swept_surface,
+                       bounded_surface,
+                       offset_surface,
+                       surface_replica))
+  SUBTYPE OF (geometric_representation_item);
+  --IP1:
+  --IP2:
+END_ENTITY;
+
+ENTITY elementary_surface
+  SUPERTYPE OF (ONEOF (plane,
+                       cylindrical_surface,
+                       conical_surface,
+                       spherical_surface,
+                       toroidal_surface))
+  SUBTYPE OF (surface);
+  position : axis2_placement_3d;
+END_ENTITY;
+
+ENTITY plane
+  SUBTYPE OF (elementary_surface);
+END_ENTITY;
+
+ENTITY cylindrical_surface
+  SUBTYPE OF (elementary_surface);
+  radius : positive_length_measure;
+END_ENTITY;
+
+ENTITY conical_surface
+  SUBTYPE OF (elementary_surface);
+  radius : length_measure;
+  semi_angle : plane_angle_measure;
+WHERE
+  WR1: radius >= 0.0;
+END_ENTITY;
+
+ENTITY spherical_surface
+  SUBTYPE OF (elementary_surface);
+  radius : positive_length_measure;
+END_ENTITY;
+
+ENTITY toroidal_surface
+  SUBTYPE OF (elementary_surface);
+  major_radius : positive_length_measure;
+  minor_radius : positive_length_measure;
+END_ENTITY;
+
+ENTITY degenerate_toroidal_surface
+  SUBTYPE OF (toroidal_surface);
+  select_outer : BOOLEAN;
+WHERE
+  WR1: major_radius < minor_radius;
+END_ENTITY;
+
+(*ENTITY dupin_cyclide_surface
+  SUBTYPE OF (elementary_surface);
+  generalised_major_radius : positive_length_measure;
+  generalised_minor_radius : positive_length_measure;
+  skewness : length_measure;
+WHERE
+  WR1: skewness >= 0.0;
+END_ENTITY;*)
+
+ENTITY swept_surface
+  SUPERTYPE OF (ONEOF (surface_of_linear_extrusion,
+                       surface_of_revolution,
+                       surface_curve_swept_surface,
+                       fixed_reference_swept_surface))
+  SUBTYPE OF (surface);
+  swept_curve : curve;
+END_ENTITY;
+
+ENTITY surface_of_linear_extrusion
+  SUBTYPE OF (swept_surface);
+  extrusion_axis : vector;
+  --IP1:
+END_ENTITY;
+
+ENTITY surface_of_revolution
+  SUBTYPE OF (swept_surface);
+  axis_position : axis1_placement;
+DERIVE
+  axis_line : line := representation_item('')|| geometric_representation_item()|| curve()|| line(axis_position.location, representation_item('')|| geometric_representation_item()|| vector(axis_position.z, 1.0));
+  --IP1:
+  --IP2:
+END_ENTITY;
+
+(*ENTITY surface_curve_swept_surface
+  SUBTYPE OF (swept_surface);
+  directrix : curve;
+  reference_surface : surface;
+WHERE
+  WR1: (NOT ('GEOMETRY_SCHEMA.SURFACE_CURVE' IN TYPEOF(directrix))) OR (reference_surface IN (directrix\surface_curve.basis_surface));
+  --IP1:
+  --IP2:
+  END_ENTITY;
+
+ENTITY fixed_reference_swept_surface
+  SUBTYPE OF (swept_surface);
+  directrix : curve;
+  fixed_reference : direction;
+  --IP1:
+  --IP2:
+END_ENTITY;*)
+
+ENTITY bounded_surface
+  SUPERTYPE OF (ONEOF (b_spline_surface,
+                       rectangular_trimmed_surface,
+                       curve_bounded_surface,
+                       rectangular_composite_surface,
+                       locally_refined_spline_surface))
+  SUBTYPE OF (surface);
+  --IP1:
+  --IP2:
+END_ENTITY;
+
+ENTITY b_spline_surface
+  SUPERTYPE OF (ONEOF (b_spline_surface_with_knots,
+                       uniform_surface,
+                       quasi_uniform_surface,
+                       bezier_surface)
+               ANDOR rational_b_spline_surface)
+  SUBTYPE OF (bounded_surface);
+  u_degree : INTEGER;
+  v_degree : INTEGER;
+  control_points_list : LIST[2:?] OF LIST[2:?] OF cartesian_point;
+  surface_form : b_spline_surface_form;
+  u_closed : LOGICAL;
+  v_closed : LOGICAL;
+  self_intersect : LOGICAL;
+DERIVE
+  u_upper : INTEGER := SIZEOF(control_points_list) - 1;
+  v_upper : INTEGER := SIZEOF(control_points_list[1]) - 1;
+  control_points : ARRAY[0:u_upper] OF ARRAY[0:v_upper] OF cartesian_point := make_array_of_array(control_points_list, 0,u_upper,0,v_upper);
+WHERE
+  WR1: ('GEOMETRY_SCHEMA.UNIFORM_SURFACE' IN TYPEOF(SELF)) OR ('GEOMETRY_SCHEMA.QUASI_UNIFORM_SURFACE' IN TYPEOF(SELF)) OR ('GEOMETRY_SCHEMA.BEZIER_SURFACE' IN TYPEOF(SELF)) OR ('GEOMETRY_SCHEMA.B_SPLINE_SURFACE_WITH_KNOTS' IN TYPEOF(SELF));
+END_ENTITY;
+
+(*ENTITY b_spline_surface_with_knots
+  SUBTYPE OF (b_spline_surface);
+  u_multiplicities : LIST[2:?] OF INTEGER;
+  v_multiplicities : LIST[2:?] OF INTEGER;
+  u_knots : LIST[2:?] OF parameter_value;
+  v_knots : LIST[2:?] OF parameter_value;
+  knot_spec : knot_type;
+DERIVE
+  knot_u_upper : INTEGER := SIZEOF(u_knots);
+  knot_v_upper : INTEGER := SIZEOF(v_knots);
+WHERE
+  WR1: constraints_param_b_spline(SELF\b_spline_surface.u_degree, knot_u_upper, SELF\b_spline_surface.u_upper, u_multiplicities, u_knots);
+  WR2: constraints_param_b_spline(SELF\b_spline_surface.v_degree, knot_v_upper, SELF\b_spline_surface.v_upper, v_multiplicities, v_knots);
+  WR3: SIZEOF(u_multiplicities) = knot_u_upper;
+  WR4: SIZEOF(v_multiplicities) = knot_v_upper;
+END_ENTITY;
+
+ENTITY uniform_surface
+  SUBTYPE OF (b_spline_surface);
+END_ENTITY;
+
+ENTITY quasi_uniform_surface
+  SUBTYPE OF (b_spline_surface);
+END_ENTITY;
+
+ENTITY bezier_surface
+  SUBTYPE OF (b_spline_surface);
+END_ENTITY;*)
+
+ENTITY rational_b_spline_surface
+  SUBTYPE OF (b_spline_surface);
+  weights_data : LIST[2:?] OF LIST[2:?] OF REAL;
+DERIVE
+  weights : ARRAY[0:u_upper] OF ARRAY[0:v_upper] OF REAL := make_array_of_array(weights_data,0,u_upper,0,v_upper);
+WHERE
+  WR1: (SIZEOF(weights_data) = SIZEOF(SELF\b_spline_surface.control_points_list)) AND (SIZEOF(weights_data[1]) = SIZEOF(SELF\b_spline_surface.control_points_list[1]));
+  WR2: surface_weights_positive(SELF);
+END_ENTITY;
+
+(*ENTITY locally_refined_spline_surface
+SUBTYPE OF(bounded_surface);
+ u_b_splines : LIST [4:?] OF local_b_spline;
+ v_b_splines                : LIST [4:?] OF local_b_spline;
+ u_knots                    : spline_knot_values;
+ v_knots                    : spline_knot_values;
+ control_points_list : LIST [4:?] OF cartesian_point;
+ scaling_factors            : LIST [4:?] OF REAL;
+ linearly_independent : linearly_independent_enum;
+ locally_refined_spline_type : locally_refined_spline_type_enum;
+ self_intersect : LOGICAL;
+ u_closed : LOGICAL;
+ v_closed : LOGICAL;
+ domain : LIST [2:2] OF LIST[2:2] OF  REAL;
+WHERE
+ WR1 : SIZEOF(u_b_splines) = SIZEOF(control_points_list);
+ WR2 : SIZEOF(v_b_splines) = SIZEOF(control_points_list);
+ WR3 : SIZEOF(scaling_factors) = SIZEOF(control_points_list);
+ WR4 : constraints_scaling(scaling_factors);
+END_ENTITY;
+
+
+ENTITY rational_locally_refined_spline_surface
+SUBTYPE OF(locally_refined_spline_surface);
+ weights_data : LIST [4:?] OF REAL;
+WHERE
+ WR1 : SIZEOF(weights_data) = SIZEOF(SELF\locally_refined_spline_surface.control_points_list);
+ WR2 : weights_positive(weights_data);
+END_ENTITY;
+
+
+ENTITY rectangular_trimmed_surface
+  SUBTYPE OF (bounded_surface);
+  basis_surface : surface;
+  u1 : parameter_value;
+  u2 : parameter_value;
+  v1 : parameter_value;
+  v2 : parameter_value;
+  usense : BOOLEAN;
+  vsense : BOOLEAN;
+WHERE
+  WR1: u1 <> u2;
+  WR2: v1 <> v2;
+  WR3: (('GEOMETRY_SCHEMA.ELEMENTARY_SURFACE' IN TYPEOF(basis_surface)) AND (NOT ('GEOMETRY_SCHEMA.PLANE' IN TYPEOF(basis_surface)))) OR ('GEOMETRY_SCHEMA.SURFACE_OF_REVOLUTION' IN TYPEOF(basis_surface)) OR (usense = (u2 > u1));
+  WR4: (('GEOMETRY_SCHEMA.SPHERICAL_SURFACE' IN TYPEOF(basis_surface)) OR ('GEOMETRY_SCHEMA.TOROIDAL_SURFACE' IN TYPEOF(basis_surface))) OR (vsense = (v2 > v1));
+  --IP1:
+END_ENTITY;*)
+
+ENTITY curve_bounded_surface
+  SUBTYPE OF (bounded_surface);
+  basis_surface : surface;
+  boundaries : SET[1:?] OF boundary_curve;
+  implicit_outer : BOOLEAN;
+WHERE
+  WR1: (NOT implicit_outer) OR (SIZEOF (QUERY (temp <* boundaries | 'GEOMETRY_SCHEMA.OUTER_BOUNDARY_CURVE' IN TYPEOF(temp))) = 0);
+  WR2: (NOT(implicit_outer)) OR ('GEOMETRY_SCHEMA.BOUNDED_SURFACE' IN TYPEOF(basis_surface));
+  WR3: SIZEOF(QUERY(temp <* boundaries | 'GEOMETRY_SCHEMA.OUTER_BOUNDARY_CURVE' IN TYPEOF(temp))) <= 1;
+  WR4: SIZEOF(QUERY(temp <* boundaries | (temp\composite_curve_on_surface.basis_surface [1] <> basis_surface))) = 0;
+  --IP1:
+  --IP2:
+  --IP3:
+END_ENTITY;
+
+ENTITY boundary_curve
+  SUBTYPE OF (composite_curve_on_surface);
+WHERE
+  WR1: SELF\composite_curve.closed_curve;
+END_ENTITY;
+
+ENTITY outer_boundary_curve
+  SUBTYPE OF (boundary_curve);
+END_ENTITY;
+
+(*ENTITY rectangular_composite_surface
+  SUBTYPE OF (bounded_surface);
+  segments : LIST[1:?] OF LIST[1:?] OF surface_patch;
+DERIVE
+  n_u : INTEGER := SIZEOF(segments);
+  n_v : INTEGER := SIZEOF(segments[1]);
+WHERE
+  WR1: SIZEOF(QUERY (s <* segments | n_v <> SIZEOF (s))) = 0;
+  WR2: constraints_rectangular_composite_surface(SELF);
+  --IP1:
+END_ENTITY;
+
+ENTITY surface_patch
+  SUBTYPE OF (founded_item);
+  parent_surface : bounded_surface;
+  u_transition : transition_code;
+  v_transition : transition_code;
+  u_sense : BOOLEAN;
+  v_sense : BOOLEAN;
+INVERSE
+  using_surfaces : BAG[1:?] OF rectangular_composite_surface FOR segments;
+WHERE
+  WR1: (NOT ('GEOMETRY_SCHEMA.CURVE_BOUNDED_SURFACE' IN TYPEOF(parent_surface)));
+END_ENTITY;*)
+
+ENTITY offset_surface
+  SUBTYPE OF (surface);
+  basis_surface : surface;
+  distance : length_measure;
+  self_intersect : LOGICAL;
+END_ENTITY;
+
+(*ENTITY oriented_surface
+  SUBTYPE OF (surface);
+  orientation : BOOLEAN;
+END_ENTITY;*)
+
+ENTITY surface_replica
+  SUBTYPE OF (surface);
+  parent_surface : surface;
+  transformation : cartesian_transformation_operator_3d;
+WHERE
+  WR1: acyclic_surface_replica(SELF, parent_surface);
+END_ENTITY;
+
+ENTITY volume
+  SUPERTYPE OF (ONEOF (block_volume,
+                       wedge_volume,
+                       spherical_volume,
+                       cylindrical_volume,
+                       eccentric_conical_volume,
+                       toroidal_volume,
+                       pyramid_volume,
+                       b_spline_volume,
+                       ellipsoid_volume,
+                       tetrahedron_volume,
+                       hexahedron_volume,
+                       locally_refined_spline_volume))
+  SUBTYPE OF (geometric_representation_item);
+WHERE
+  WR1: SELF\geometric_representation_item.dim = 3;
+END_ENTITY;
+
+ENTITY block_volume
+  SUBTYPE OF (volume);
+  position : axis2_placement_3d;
+  x : positive_length_measure;
+  y : positive_length_measure;
+  z : positive_length_measure;
+END_ENTITY;
+
+ENTITY wedge_volume
+  SUBTYPE OF (volume);
+  position : axis2_placement_3d;
+  x : positive_length_measure;
+  y : positive_length_measure;
+  z : positive_length_measure;
+  ltx : length_measure;
+WHERE
+  WR1: ((0.0 <= ltx) AND (ltx < x));
+END_ENTITY;
+
+ENTITY pyramid_volume
+  SUBTYPE OF (volume);
+  position : axis2_placement_3d;
+  xlength : positive_length_measure;
+  ylength : positive_length_measure;
+  height : positive_length_measure;
+END_ENTITY;
+
+ENTITY tetrahedron_volume
+  SUBTYPE OF (volume);
+  point_1 : cartesian_point;
+  point_2 : cartesian_point;
+  point_3 : cartesian_point;
+  point_4 : cartesian_point;
+WHERE
+  WR1: point_1.dim = 3;
+  WR2: above_plane(point_1, point_2, point_3, point_4) <> 0.0;
+END_ENTITY;
+
+ENTITY hexahedron_volume
+  SUBTYPE OF (volume);
+  points : LIST[8:8] OF cartesian_point;
+WHERE
+  WR1: above_plane(points[1], points[2], points[3], points[4]) = 0.0;
+  WR2: above_plane(points[5], points[8], points[7], points[6]) = 0.0;
+  WR3: above_plane(points[1], points[4], points[8], points[5]) = 0.0;
+  WR4: above_plane(points[4], points[3], points[7], points[8]) = 0.0;
+  WR5: above_plane(points[3], points[2], points[6], points[7]) = 0.0;
+  WR6: above_plane(points[1], points[5], points[6], points[2]) = 0.0;
+  WR7: same_side([points[1], points[2], points[3]], [points[5], points[6], points[7], points[8]]);
+  WR8: same_side([points[1], points[4], points[8]], [points[3], points[7], points[6], points[2]]);
+  WR9: same_side([points[1], points[2], points[5]], [points[3], points[7], points[8], points[4]]);
+  WR10: same_side([points[5], points[6], points[7]], [points[1], points[2], points[3], points[4]]);
+  WR11: same_side([points[3], points[7], points[6]], [points[1], points[4], points[8], points[5]]);
+  WR12: same_side([points[3], points[7], points[8]], [points[1], points[5], points[6], points[2]]);
+  WR13: points[1].dim = 3;
+END_ENTITY;
+
+ENTITY spherical_volume
+  SUBTYPE OF (volume);
+  position : axis2_placement_3d;
+  radius : positive_length_measure;
+END_ENTITY;
+
+ENTITY cylindrical_volume
+  SUBTYPE OF (volume);
+  position : axis2_placement_3d;
+  radius : positive_length_measure;
+  height : positive_length_measure;
+END_ENTITY;
+
+ENTITY eccentric_conical_volume
+  SUBTYPE OF (volume);
+  position : axis2_placement_3d;
+  semi_axis_1 : positive_length_measure;
+  semi_axis_2 : positive_length_measure;
+  height : positive_length_measure;
+  x_offset : length_measure;
+  y_offset : length_measure;
+  ratio : REAL;
+WHERE
+  WR1: ratio >= 0.0;
+END_ENTITY;
+
+ENTITY toroidal_volume
+  SUBTYPE OF (volume);
+  position : axis2_placement_3d;
+  major_radius : positive_length_measure;
+  minor_radius : positive_length_measure;
+WHERE
+  WR1: minor_radius < major_radius;
+END_ENTITY;
+
+ENTITY ellipsoid_volume
+  SUBTYPE OF (volume);
+  position : axis2_placement_3d;
+  semi_axis_1 : positive_length_measure;
+  semi_axis_2 : positive_length_measure;
+  semi_axis_3 : positive_length_measure;
+END_ENTITY;
+
+(*ENTITY b_spline_volume
+  SUPERTYPE OF (ONEOF (b_spline_volume_with_knots,
+                       uniform_volume,
+                       quasi_uniform_volume,
+                       bezier_volume)
+               ANDOR rational_b_spline_volume)
+  SUBTYPE OF (volume);
+  u_degree : INTEGER;
+  v_degree : INTEGER;
+  w_degree : INTEGER;
+  control_points_list : LIST[2:?] OF LIST[2:?] OF LIST[2:?] OF cartesian_point;
+DERIVE
+  u_upper : INTEGER := SIZEOF(control_points_list) - 1;
+  v_upper : INTEGER := SIZEOF(control_points_list[1]) - 1;
+  w_upper : INTEGER := SIZEOF(control_points_list[1][1]) - 1;
+  control_points : ARRAY[0:u_upper] OF ARRAY[0:v_upper] OF ARRAY[0:w_upper] OF cartesian_point := make_array_of_array_of_array (control_points_list, 0,u_upper,0,v_upper, 0,w_upper );
+WHERE
+  WR1: ('GEOMETRY_SCHEMA.BEZIER_VOLUME' IN TYPEOF(SELF)) OR ('GEOMETRY_SCHEMA.UNIFORM_VOLUME' IN TYPEOF(SELF)) OR ('GEOMETRY_SCHEMA.QUASI_UNIFORM_VOLUME' IN TYPEOF(SELF)) OR ('GEOMETRY_SCHEMA.B_SPLINE_VOLUME_WITH_KNOTS' IN TYPEOF(SELF));
+END_ENTITY;
+
+ENTITY b_spline_volume_with_knots
+  SUBTYPE OF (b_spline_volume);
+  u_multiplicities : LIST[2:?] OF INTEGER;
+  v_multiplicities : LIST[2:?] OF INTEGER;
+  w_multiplicities : LIST[2:?] OF INTEGER;
+  u_knots : LIST[2:?] OF parameter_value;
+  v_knots : LIST[2:?] OF parameter_value;
+  w_knots : LIST[2:?] OF parameter_value;
+DERIVE
+  knot_u_upper : INTEGER := SIZEOF(u_knots);
+  knot_v_upper : INTEGER := SIZEOF(v_knots);
+  knot_w_upper : INTEGER := SIZEOF(w_knots);
+WHERE
+  WR1: constraints_param_b_spline(SELF\b_spline_volume.u_degree, knot_u_upper, SELF\b_spline_volume.u_upper, u_multiplicities, u_knots);
+  WR2: constraints_param_b_spline(SELF\b_spline_volume.v_degree, knot_v_upper, SELF\b_spline_volume.v_upper, v_multiplicities, v_knots);
+  WR3: constraints_param_b_spline(SELF\b_spline_volume.w_degree, knot_w_upper, SELF\b_spline_volume.w_upper, w_multiplicities, w_knots);
+  WR4: SIZEOF(u_multiplicities) = knot_u_upper;
+  WR5: SIZEOF(v_multiplicities) = knot_v_upper;
+  WR6: SIZEOF(w_multiplicities) = knot_w_upper;
+END_ENTITY;
+
+ENTITY bezier_volume
+  SUBTYPE OF (b_spline_volume);
+END_ENTITY;
+
+ENTITY uniform_volume
+  SUBTYPE OF (b_spline_volume);
+END_ENTITY;
+
+ENTITY quasi_uniform_volume
+  SUBTYPE OF (b_spline_volume);
+END_ENTITY;
+
+ENTITY rational_b_spline_volume
+  SUBTYPE OF (b_spline_volume);
+  weights_data : LIST[2:?] OF LIST[2:?] OF LIST[2:?] OF REAL;
+DERIVE
+  weights : ARRAY[0:u_upper] OF ARRAY[0:v_upper] OF ARRAY[0:w_upper] OF REAL := make_array_of_array_of_array (weights_data,0,u_upper,0,v_upper,0,w_upper);
+WHERE
+  WR1: (SIZEOF(weights_data) = SIZEOF(SELF\b_spline_volume.control_points_list)) AND (SIZEOF(weights_data[1]) = SIZEOF(SELF\b_spline_volume.control_points_list[1])) AND (SIZEOF(weights_data[1][1]) = SIZEOF(SELF\b_spline_volume.control_points_list[1][1]));
+  WR2: volume_weights_positive(SELF);
+END_ENTITY;
+
+ENTITY locally_refined_spline_volume
+SUBTYPE OF(volume);
+ u_b_splines : LIST [8:?] OF local_b_spline;
+ v_b_splines : LIST [8:?] OF local_b_spline;
+ w_b_splines : LIST [8:?] OF local_b_spline;
+ u_knots                    : spline_knot_values;
+ v_knots                    : spline_knot_values;
+ w_knots                    : spline_knot_values;
+ control_points_list : LIST [8:?] OF cartesian_point;
+ scaling_factors            : LIST [8:?] OF REAL;
+ linearly_independent : linearly_independent_enum;
+ locally_refined_spline_type : locally_refined_spline_type_enum;
+ domain : LIST [3:3] OF LIST[2:2] OF  REAL;
+WHERE
+ WR1 : SIZEOF(u_b_splines) = SIZEOF(control_points_list);
+ WR2 : SIZEOF(v_b_splines) = SIZEOF(control_points_list);
+ WR3 : SIZEOF(w_b_splines) = SIZEOF(control_points_list);
+ WR4 : SIZEOF(scaling_factors) = SIZEOF(control_points_list);
+ WR5 : constraints_scaling(scaling_factors);  
+END_ENTITY;
+
+
+ENTITY rational_locally_refined_spline_volume
+SUBTYPE OF(locally_refined_spline_volume);
+ weights_data : LIST [8:?] OF REAL;
+WHERE
+ WR1  : SIZEOF(weights_data) = SIZEOF(SELF\locally_refined_spline_volume.control_points_list);
+ WR2  : weights_positive(weights_data);
+END_ENTITY;*)
+
+END_SCHEMA;  -- geometry_schema

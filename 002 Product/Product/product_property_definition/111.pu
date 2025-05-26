@@ -1,0 +1,73 @@
+@startuml
+
+class "справочное свойство" {
+  +id
+  +name
+  +description
+}
+
+class "связь со справочным свойством" {
+  +name
+  +description
+}
+
+class "связь между свойствами" {
+  +name
+  +description
+}
+
+' Ассоциации
+"связь со справочным свойством" --> "справочное свойство" : base_definition
+"связь со справочным свойством" --> property_definition : derived_definition
+
+general_property_relationship --> general_property : relating_property
+general_property_relationship --> general_property : related_property
+
+class property_definition {
+  +name
+  +description
+  +definition
+}
+
+class product_definition_shape {
+  +name
+  +description
+}
+
+class shape_aspect {
+  +name
+  +description
+  +of_shape
+  +product_definitional
+}
+
+class shape_aspect_occurrence {
+  +name
+  +description
+  +of_shape
+  +product_definitional
+  +definition
+}
+
+class component_path_shape_aspect {
+  +name
+  +description
+  +of_shape
+  +product_definitional
+  +location
+  +component_shape_aspect
+}
+
+' Наследование
+property_definition <|-- product_definition_shape
+shape_aspect <|-- shape_aspect_occurrence
+shape_aspect <|-- component_path_shape_aspect
+
+' Ассоциации
+product_definition_shape --> characterized_definition : definition
+shape_aspect --> product_definition_shape : of_shape
+shape_aspect_occurrence --> shape_aspect_or_characterized_object : definition
+component_path_shape_aspect --> multi_or_next_assembly_usage_occurrence : location
+component_path_shape_aspect --> internal_or_reflected_shape_aspect : component_shape_aspect
+
+@enduml

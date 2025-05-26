@@ -1,0 +1,350 @@
+(*
+$Id: product_structure_schema.exp,v 1.41 2021/08/04 15:59:44 kevin Exp $
+ISO 10303 TC184/SC4/WG12 N10967
+
+EXPRESS Source:
+ISO 10303-44 ed6 Product structure configuration - Product structure schema
+
+The following permission notice and disclaimer shall be included in all copies of this EXPRESS schema ("the Schema"),
+and derivations of the Schema:
+
+Copyright ISO 2021  All rights reserved
+Permission is hereby granted, free of charge in perpetuity, to any person obtaining a copy of the Schema,
+to use, copy, modify, merge and distribute free of charge, copies of the Schema for the purposes of developing,
+implementing, installing and using software based on the Schema, and to permit persons to whom the Schema is furnished to do so,
+subject to the following conditions:
+
+THE SCHEMA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCHEMA OR THE
+USE OR OTHER DEALINGS IN THE SCHEMA.
+
+In addition, any modified copy of the Schema shall include the following notice:
+
+THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN
+ISO 10303-44 ed6 Product structure configuration - Product structure schema
+AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD
+*)
+
+SCHEMA product_structure_schema '{iso standard 10303 part(44) version(6) object(1) product_structure_schema(1)}';
+
+  REFERENCE FROM measure_schema   -- ISO 10303-41
+     (measure_with_unit);
+
+  REFERENCE FROM product_definition_schema   -- ISO 10303-41
+    (acyclic_product_definition_relationship,
+     generic_product_definition_reference,
+     product,
+     product_definition,
+     product_definition_formation,
+     product_definition_or_reference,
+     product_definition_reference,
+     product_definition_relationship,
+     product_definition_relationship_relationship);
+
+  REFERENCE FROM support_resource_schema   -- ISO 10303-41
+     (identifier, label, text);
+
+TYPE product_definition_occurrence_or_reference = SELECT (
+  product_definition_occurrence,
+  product_definition_occurrence_reference);
+END_TYPE;
+
+TYPE product_definition_or_reference_or_occurrence = SELECT BASED_ON product_definition_or_reference WITH (
+  product_definition_occurrence);
+END_TYPE;
+
+ENTITY alternate_product_relationship;
+  name        : label;
+  definition  : OPTIONAL text;
+  alternate   : product;
+  base        : product;
+  basis       : text;
+UNIQUE
+  UR1: alternate, base;
+WHERE
+  WR1: alternate :<>: base;
+END_ENTITY;
+
+ENTITY assembly_component_usage
+  SUPERTYPE OF (quantified_assembly_component_usage ANDOR
+                ONEOF (multi_level_reference_designator,
+  					   next_assembly_usage_occurrence,
+  					   promissory_usage_occurrence,
+                       specified_higher_usage_occurrence))
+  SUBTYPE OF (product_definition_usage);
+  reference_designator : OPTIONAL identifier;
+END_ENTITY;
+
+ENTITY assembly_component_usage_substitute;
+  name              : label;
+  definition        : OPTIONAL text;
+  base              : assembly_component_usage;
+  substitute        : assembly_component_usage;
+UNIQUE
+  UR1: base,substitute;
+WHERE
+  WR1: base.relating_product_definition :=:
+       substitute.relating_product_definition;
+  WR2: base :<>: substitute;
+END_ENTITY;
+
+ENTITY assembly_component_usage_substitute_with_ranking
+  SUBTYPE OF (assembly_component_usage_substitute);
+  ranking           : INTEGER;
+  ranking_rationale : text;
+END_ENTITY;
+
+ENTITY make_from_usage_option
+  SUBTYPE OF (product_definition_usage);
+  ranking           : INTEGER;
+  ranking_rationale : text;
+  quantity          : measure_with_unit;
+WHERE
+  WR1: (NOT ('NUMBER' IN TYPEOF(quantity.value_component)))
+       OR (quantity.value_component > 0);
+END_ENTITY;
+
+ENTITY make_from_usage_option_group;
+  members : SET [2:?] OF make_from_usage_option;
+WHERE
+  WR1: SIZEOF (QUERY (example <* members |
+       example.related_product_definition
+       :=: members[1].related_product_definition)) =SIZEOF(members);
+END_ENTITY;
+
+ENTITY multi_level_reference_designator
+  SUBTYPE OF (assembly_component_usage);
+  location : LIST[1:?] OF UNIQUE next_assembly_usage_occurrence;
+DERIVE
+  SELF\product_definition_relationship.relating_product_definition RENAMED root : product_definition := location[1]\product_definition_relationship.relating_product_definition;
+  SELF\product_definition_relationship.related_product_definition  RENAMED leaf : product_definition_or_reference := location[HIINDEX(location)]\product_definition_relationship.related_product_definition;
+UNIQUE
+  UR1: location;
+WHERE
+  WR1: unambiguously_specified_multi_level_reference_designator(location);
+  WR2: SIZEOF(QUERY(cp <* location | NOT (
+         EXISTS(cp\assembly_component_usage.reference_designator)))) = 0;
+END_ENTITY;
+
+ENTITY next_assembly_usage_occurrence
+  SUBTYPE OF (assembly_component_usage);
+DERIVE
+  product_definition_occurrence_id : identifier := SELF\product_definition_relationship.related_product_definition\product_definition_occurrence.id;
+-- replicates the id of a product_definition_occurrence that is referenced by related_product_definition.
+UNIQUE
+  UR1 : SELF\assembly_component_usage.reference_designator, SELF\product_definition_relationship.relating_product_definition;
+  UR2 : product_definition_occurrence_id, SELF\product_definition_relationship.relating_product_definition;
+--  The id of a product_definition_occurrence shall be unique among all product_definition_or_occurrence_or_reference that are used within an assembly of the occurrance_usages
+END_ENTITY;
+
+ENTITY product_definition_occurrence
+  SUPERTYPE OF (product_definition_specified_occurrence ANDOR product_definition_occurrence_reference_with_local_representation);
+  id : identifier;
+  name : OPTIONAL label;
+  description : OPTIONAL text;
+  definition : OPTIONAL product_definition_or_reference_or_occurrence;
+  quantity : OPTIONAL measure_with_unit;
+DERIVE
+  descendant_occurrences : SET[0:?] OF product_definition_specified_occurrence := get_descendant_occurrences(SELF);
+INVERSE
+  assembly_usages : SET[0:?] OF assembly_component_usage FOR related_product_definition;
+  child_occurrences : SET[0:?] OF product_definition_specified_occurrence FOR occurrence_usage;
+WHERE
+  WR1 : NOT (('PRODUCT_STRUCTURE_SCHEMA.PRODUCT_DEFINITION_OCCURRENCE' IN TYPEOF(definition)) OR 
+             ('PRODUCT_STRUCTURE_SCHEMA.PRODUCT_DEFINITION_OCCURRENCE_REFERENCE' IN TYPEOF(definition)))
+      OR
+           ('PRODUCT_STRUCTURE_SCHEMA.PRODUCT_DEFINITION_SPECIFIED_OCCURRENCE' IN TYPEOF(SELF));
+  WR2: EXISTS(definition) OR
+       (SIZEOF(USEDIN(SELF, 'CONFIGURATION_MANAGEMENT_SCHEMA.CONFIGURATION_DESIGN.DESIGN')) > 0);
+  WR3: NOT ('NUMBER' IN TYPEOF(quantity\measure_with_unit.value_component)) OR 
+            (quantity\measure_with_unit.value_component > 0);
+END_ENTITY;
+
+ENTITY product_definition_occurrence_reference
+  SUBTYPE OF (product_definition_reference);
+  product_occurrence_id : identifier;
+END_ENTITY;
+
+ENTITY product_definition_occurrence_reference_with_local_representation
+  SUBTYPE OF (product_definition_occurrence, generic_product_definition_reference);
+END_ENTITY;
+
+ENTITY product_definition_occurrence_relationship;
+  name             : label;
+  description      : OPTIONAL text;
+  occurrence       : product_definition;
+  occurrence_usage : assembly_component_usage;
+WHERE
+  WR1: occurrence_usage.relating_product_definition :<>:
+       occurrence;
+  WR2: occurrence_usage.related_product_definition :<>:
+       occurrence;
+  WR3: occurrence.formation :=:
+       occurrence_usage.related_product_definition.formation;
+END_ENTITY;
+
+ENTITY product_definition_specified_occurrence
+  SUBTYPE OF (product_definition_occurrence);
+	SELF\product_definition_occurrence.definition : product_definition_occurrence_or_reference;
+	occurrence_usage : product_definition_occurrence_or_reference;
+UNIQUE
+	UR1 : occurrence_usage, id;
+WHERE
+	WR1: SIZEOF(assembly_usages) = 0;
+	WR2: acyclic_product_definition_specified_occurrence(SELF, SELF\product_definition_occurrence.definition);
+END_ENTITY;
+
+ENTITY product_definition_usage
+  SUPERTYPE OF (ONEOF (make_from_usage_option,
+                       assembly_component_usage))
+  SUBTYPE OF (product_definition_relationship);
+UNIQUE
+  UR1: SELF\product_definition_relationship.id,
+       SELF\product_definition_relationship.relating_product_definition,
+       SELF\product_definition_relationship.related_product_definition;
+WHERE
+  WR1:  acyclic_product_definition_relationship
+         (SELF,
+         [SELF\product_definition_relationship.related_product_definition],
+         'PRODUCT_STRUCTURE_SCHEMA.PRODUCT_DEFINITION_USAGE');
+END_ENTITY;
+
+ENTITY product_definition_usage_relationship
+  SUBTYPE OF (product_definition_relationship_relationship);
+  SELF\product_definition_relationship_relationship.relating : product_definition_usage;
+  SELF\product_definition_relationship_relationship.related : product_definition_usage;
+WHERE
+  WR1: relating.relating_product_definition :=: related.relating_product_definition;
+END_ENTITY;
+
+ENTITY promissory_usage_occurrence
+  SUBTYPE OF (assembly_component_usage);
+END_ENTITY;
+
+ENTITY quantified_assembly_component_usage
+  SUBTYPE OF (assembly_component_usage);
+  quantity   : measure_with_unit;
+WHERE
+  WR1: (NOT ('NUMBER' IN TYPEOF(quantity.value_component)))
+       OR (quantity.value_component > 0);
+END_ENTITY;
+
+ENTITY specified_higher_usage_occurrence
+  SUBTYPE OF (assembly_component_usage);
+  upper_usage   : assembly_component_usage;
+  next_usage    : next_assembly_usage_occurrence;
+UNIQUE
+  UR1: upper_usage, next_usage;
+WHERE
+  WR1: SELF :<>: upper_usage;
+  WR2: SELF\product_definition_relationship.relating_product_definition
+       :=: upper_usage.relating_product_definition;
+  WR3: SELF\product_definition_relationship.related_product_definition
+       :=: next_usage.related_product_definition;
+  WR4: (upper_usage.related_product_definition :=:
+       next_usage.relating_product_definition) OR
+       (SIZEOF (QUERY (pdr <* USEDIN (upper_usage.related_product_definition,
+       'PRODUCT_DEFINITION_SCHEMA.PRODUCT_DEFINITION_RELATIONSHIP.' +
+       'RELATED_PRODUCT_DEFINITION') |
+        pdr.relating_product_definition :=:
+        next_usage.relating_product_definition)) = 1);
+  WR5: SIZEOF (['PRODUCT_STRUCTURE_SCHEMA.NEXT_ASSEMBLY_USAGE_OCCURRENCE',
+       'PRODUCT_STRUCTURE_SCHEMA.SPECIFIED_HIGHER_USAGE_OCCURRENCE']
+       * TYPEOF(upper_usage)) = 1;
+END_ENTITY;
+
+FUNCTION acyclic_product_definition_specified_occurrence
+          (pdso : product_definition_specified_occurrence; definition : product_definition_occurrence) : BOOLEAN;
+    IF NOT (('PRODUCT_STRUCTURE_SCHEMA.PRODUCT_DEFINITION_SPECIFIED_OCCURRENCE') IN TYPEOF(definition)) THEN
+      RETURN   (TRUE);
+    END_IF;
+    IF  (definition :=: pdso) THEN
+      RETURN  (FALSE);
+    ELSE RETURN(acyclic_product_definition_specified_occurrence(pdso, definition\product_definition_occurrence.definition));
+    END_IF;
+END_FUNCTION;
+
+FUNCTION get_descendant_occurrences(input : product_definition_occurrence) : SET [0:?] OF product_definition_specified_occurrence;
+    LOCAL
+        result : SET  OF  product_definition_specified_occurrence := input.child_occurrences;
+    END_LOCAL;
+    REPEAT i := 1 TO HIINDEX(input.child_occurrences) BY 1;
+        result := result + get_descendant_occurrences(input.child_occurrences[i]);
+    END_REPEAT;
+    RETURN (result);
+END_FUNCTION;
+
+FUNCTION unambiguously_specified_multi_level_reference_designator (links : LIST[1:?] OF next_assembly_usage_occurrence) : BOOLEAN;
+REPEAT i := 1 to SIZEOF(links) - 1;
+--case 1 all in one file; had to disambiguate link[i].relating instance type to distinguish case 1 from case 3.
+   CASE TRUE OF
+      ('PRODUCT_DEFINITION_SCHEMA.PRODUCT_DEFINITION' IN TYPEOF(links[i]\product_definition_relationship.relating_product_definition))
+       AND
+      ('PRODUCT_DEFINITION_SCHEMA.PRODUCT_DEFINITION' IN TYPEOF(links[i]\product_definition_relationship.related_product_definition))
+       AND
+      ('PRODUCT_DEFINITION_SCHEMA.PRODUCT_DEFINITION' IN TYPEOF(links[i+1]\product_definition_relationship.relating_product_definition)) :
+     BEGIN
+        IF NOT (
+                (links[i]\product_definition_relationship.related_product_definition :=:
+                 links[i+1]\product_definition_relationship.relating_product_definition)
+                 OR
+                ((SIZEOF (QUERY (pdr <* USEDIN(links[i]\product_definition_relationship.related_product_definition,
+                          'PRODUCT_DEFINITION_SCHEMA.PRODUCT_DEFINITION_RELATIONSHIP.' + 'RELATED_PRODUCT_DEFINITION') |
+                          pdr\product_definition_relationship.relating_product_definition :=:
+                          links[i+1]\product_definition_relationship.relating_product_definition)) = 1)
+                  AND
+                   (links[i]\product_definition_relationship.related_product_definition\product_definition.formation\product_definition_formation.of_product
+                    :=:
+                    links[i+1]\product_definition_relationship.relating_product_definition\product_definition.formation\product_definition_formation.of_product)))
+         THEN
+          RETURN(FALSE);
+        END_IF;
+     END;
+
+--case 2 ; intermediate node reference from main to external file or both node references in external file. links[i].relating instance can be either pd or pdref.
+     ('PRODUCT_DEFINITION_SCHEMA.PRODUCT_DEFINITION_REFERENCE' IN TYPEOF(links[i]\product_definition_relationship.related_product_definition))
+       AND
+     ('PRODUCT_DEFINITION_SCHEMA.PRODUCT_DEFINITION_REFERENCE' IN TYPEOF(links[i+1]\product_definition_relationship.relating_product_definition)) :
+       BEGIN
+         IF NOT (
+                (links[i]\product_definition_relationship.related_product_definition :=:
+                 links[i+1]\product_definition_relationship.relating_product_definition)
+                 OR
+                ((SIZEOF (QUERY (pdr <* USEDIN(links[i]\product_definition_relationship.related_product_definition,
+                          'PRODUCT_DEFINITION_SCHEMA.PRODUCT_DEFINITION_RELATIONSHIP.' + 'RELATED_PRODUCT_DEFINITION') |
+                          pdr\product_definition_relationship.relating_product_definition :=:
+                          links[i+1]\product_definition_relationship.relating_product_definition)) = 1)
+                  AND
+                   (links[i]\product_definition_relationship.related_product_definition\product_definition_reference.product_id
+                    =
+                    links[i+1]\product_definition_relationship.relating_product_definition\product_definition_reference.product_id)
+                  AND
+                   (links[i]\product_definition_relationship.related_product_definition\product_definition_reference.id_owning_organization_name
+                    =
+                    links[i+1]\product_definition_relationship.relating_product_definition\product_definition_reference.id_owning_organization_name)
+                  AND
+                   (links[i]\product_definition_relationship.related_product_definition\product_definition_reference.product_definition_id
+                   <>
+                    links[i+1]\product_definition_relationship.relating_product_definition\product_definition_reference.product_definition_id)))
+         THEN
+          RETURN(FALSE);
+        END_IF;
+     END;
+
+--case 3 should never see -- link in external file referencing a node in main assembly file. Note link is just links[i].
+     ('PRODUCT_DEFINITION_SCHEMA.PRODUCT_DEFINITION_REFERENCE' IN TYPEOF(links[i]\product_definition_relationship.relating_product_definition))
+       AND
+     ('PRODUCT_DEFINITION_SCHEMA.PRODUCT_DEFINITION' IN TYPEOF(links[i]\product_definition_relationship.related_product_definition)) :
+     RETURN(FALSE);
+
+     OTHERWISE : RETURN(FALSE);
+   END_CASE;
+
+END_REPEAT;
+RETURN(TRUE);
+END_FUNCTION;
+
+END_SCHEMA; -- product_structure

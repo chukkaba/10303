@@ -1,0 +1,134 @@
+(*
+$Id: application_context_schema.exp,v 1.21 2019/06/04 18:52:23 tom Exp $
+ISO 10303 TC184/SC4/WG12 N10231
+
+EXPRESS Source:
+ISO 10303-41 ed6 Fundamentals of product description and support - Application context schema
+
+The following permission notice and disclaimer shall be included in all copies of this EXPRESS schema ("the Schema"), 
+and derivations of the Schema:
+
+Copyright ISO 2019  All rights reserved
+Permission is hereby granted, free of charge in perpetuity, to any person obtaining a copy of the Schema,
+to use, copy, modify, merge and distribute free of charge, copies of the Schema for the purposes of developing, 
+implementing, installing and using software based on the Schema, and to permit persons to whom the Schema is furnished to do so, 
+subject to the following conditions:
+
+THE SCHEMA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCHEMA OR THE 
+USE OR OTHER DEALINGS IN THE SCHEMA.
+
+In addition, any modified copy of the Schema shall include the following notice:
+
+THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN
+ISO 10303-41 ed4 Fundamentals of product description and support - Application context schema
+AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD
+*)
+
+SCHEMA application_context_schema '{iso standard 10303 part(41) version(8) object(1) application_context_schema(2)}';
+
+  REFERENCE FROM basic_attribute_schema ( -- ISO 10303-41
+    description_attribute, 
+    description_attribute_select,
+    get_description_value, 
+    get_id_value, 
+    id_attribute,
+    id_attribute_select);
+  REFERENCE FROM date_time_schema (	-- ISO 10303-41
+    year_number);
+  REFERENCE FROM language_schema (language);	-- ISO 10303-41
+  REFERENCE FROM management_resources_schema (identification_assignment);	-- ISO 10303-41
+  REFERENCE FROM person_organization_schema (organization);	-- ISO 10303-41
+  REFERENCE FROM support_resource_schema (	-- ISO 10303-41
+    identifier, 
+    label, 
+    text);		
+		
+
+
+  TYPE acs_description_attribute_select = SELECT BASED_ON description_attribute_select WITH (
+    application_context);
+  END_TYPE;
+  
+  TYPE acs_id_attribute_select = SELECT BASED_ON id_attribute_select WITH (
+    application_context);
+  END_TYPE;
+  
+   TYPE exchange_identification_context_select  = SELECT (identification_assignment,organization);
+	END_TYPE;
+
+
+		
+  ENTITY application_context;
+    application : label;
+  DERIVE
+    description : text := get_description_value(SELF);
+    id : identifier := get_id_value(SELF);
+  INVERSE
+    context_elements : SET [1:?] OF application_context_element FOR frame_of_reference;
+  WHERE
+    WR1: SIZEOF(USEDIN(SELF, 'BASIC_ATTRIBUTE_SCHEMA.' + 'DESCRIPTION_ATTRIBUTE.DESCRIBED_ITEM')) <= 1;
+    WR2: SIZEOF(USEDIN(SELF, 'BASIC_ATTRIBUTE_SCHEMA.' + 'ID_ATTRIBUTE.IDENTIFIED_ITEM')) <= 1;
+  END_ENTITY;
+
+  ENTITY application_context_element
+    SUPERTYPE OF (ONEOF(library_context, product_concept_context, product_context, product_definition_context));
+    name : label;
+    frame_of_reference : application_context;
+  END_ENTITY;
+
+  ENTITY application_context_relationship;
+    name : label;
+    description : OPTIONAL text;
+    relating_context : application_context;
+    related_context : application_context;
+  END_ENTITY;
+
+  ENTITY application_protocol_definition;
+    status : label;
+    application_interpreted_model_schema_name : label;
+    application_protocol_year : year_number;
+    application : application_context;
+  END_ENTITY;
+
+  ENTITY library_context
+    SUBTYPE OF (application_context_element);
+    library_reference : label;
+  END_ENTITY;
+
+  ENTITY product_concept_context
+    SUBTYPE OF (application_context_element);
+    market_segment_type : label;
+  END_ENTITY;
+
+  ENTITY product_context
+    SUBTYPE OF (application_context_element);
+    discipline_type : label;
+  END_ENTITY;
+
+  ENTITY product_definition_context
+    SUBTYPE OF (application_context_element);
+    life_cycle_stage : label;
+  END_ENTITY;
+  
+  ENTITY dependent_product_definition_exchange_context
+    ABSTRACT SUPERTYPE
+    SUBTYPE OF (product_definition_context);
+   WHERE
+	  WR1: SIZEOF (TYPEOF(SELF) * ['APPLICATION_CONTEXT_SCHEMA.INDENTIFICATION_DEPENDENT_PRODUCT_DEFINITION_EXCHANGE_CONTEXT','APPLICATION_CONTEXT_SCHEMA.LANGUAGE_DEPENDENT_PRODUCT_DEFINITION_EXCHANGE_CONTEXT']) > 0;
+	END_ENTITY;
+
+	ENTITY identification_dependent_product_definition_exchange_context
+	  SUBTYPE OF (dependent_product_definition_exchange_context);
+	  identification_context   : exchange_identification_context_select;
+	END_ENTITY;
+
+	ENTITY language_dependent_product_definition_exchange_context
+	  SUBTYPE OF (dependent_product_definition_exchange_context);
+	  language              : language;
+	END_ENTITY;
+
+END_SCHEMA;

@@ -1,0 +1,124 @@
+SCHEMA product_property_definition_schema '{iso standard 10303 part(41) version(10) object(1) product_property_definition_schema(19)}';
+
+
+  TYPE characterized_definition = SELECT (
+    characterized_item,
+    characterized_object, 
+    characterized_product_definition, 
+    shape_definition);
+  END_TYPE;
+
+  TYPE characterized_item = SELECT (
+    item_identified_representation_usage,
+  END_TYPE;
+
+
+  TYPE characterized_product_definition = SELECT (
+    product_definition, 
+    product_definition_occurrence, 
+    product_definition_relationship,
+    product_definition_relationship_relationship);
+  END_TYPE;
+
+  TYPE derived_property_select = SELECT (
+  	property_definition, 
+
+  END_TYPE;
+
+  TYPE shape_aspect_or_characterized_object = SELECT (shape_aspect, characterized_object);
+  END_TYPE;
+  
+  TYPE shape_definition = SELECT (product_definition_shape, shape_aspect, shape_aspect_relationship);
+  END_TYPE;
+
+  TYPE internal_or_reflected_shape_aspect = SELECT (
+    shape_aspect,
+    identifier);
+  END_TYPE;
+
+  TYPE multi_or_next_assembly_usage_occurrence = SELECT (
+    multi_level_reference_designator,
+    next_assembly_usage_occurrence);
+  END_TYPE;
+
+  ENTITY characterized_object;
+    name : label;
+    description : OPTIONAL text;
+  END_ENTITY;
+
+  ENTITY characterized_object_relationship;
+    name : label;
+    description : OPTIONAL text;
+    relating_object : characterized_object;
+    related_object : characterized_object;
+  END_ENTITY;
+
+  ENTITY component_path_shape_aspect
+    SUBTYPE OF (shape_aspect);
+    location : multi_or_next_assembly_usage_occurrence;
+    component_shape_aspect : internal_or_reflected_shape_aspect;
+  UNIQUE
+    UR1 : location, component_shape_aspect;
+  END_ENTITY;
+
+  ENTITY general_property;
+    id : identifier;
+    name : label;
+    description : OPTIONAL text;
+  END_ENTITY;
+
+  ENTITY general_property_association;
+    name : label;
+    description : OPTIONAL text;
+    base_definition : general_property;
+    derived_definition : derived_property_select;
+  END_ENTITY;
+
+  ENTITY general_property_relationship;
+    name : label;
+    description : OPTIONAL text;
+    relating_property : general_property;
+    related_property : general_property;
+  END_ENTITY;
+
+  ENTITY product_definition_shape
+    SUBTYPE OF (property_definition);
+  UNIQUE
+    UR1: SELF\property_definition.definition;
+  WHERE
+    WR1: SIZEOF(['PRODUCT_PROPERTY_DEFINITION_SCHEMA.CHARACTERIZED_PRODUCT_DEFINITION', 'PRODUCT_PROPERTY_DEFINITION_SCHEMA.CHARACTERIZED_OBJECT'] * TYPEOF(SELF\property_definition.definition)) > 0;
+  END_ENTITY;
+
+  ENTITY property_definition;
+    name : label;
+    description : OPTIONAL text;
+    definition : characterized_definition;
+  DERIVE
+    id : identifier := get_id_value(SELF);
+  WHERE
+    WR1: SIZEOF(USEDIN(SELF, 'BASIC_ATTRIBUTE_SCHEMA.' + 'ID_ATTRIBUTE.IDENTIFIED_ITEM')) <= 1;
+  END_ENTITY;
+
+  ENTITY shape_aspect
+    SUPERTYPE OF (ONEOF (shape_aspect_occurrence, component_path_shape_aspect)
+                  ANDOR constituent_shape_aspect);
+    name : label;
+    description : OPTIONAL text;
+    of_shape : product_definition_shape;
+    product_definitional : LOGICAL;
+  DERIVE
+    id : identifier := get_id_value(SELF);
+  UNIQUE
+    UR1: id, of_shape;    
+  WHERE
+    WR1: SIZEOF(USEDIN(SELF, 'BASIC_ATTRIBUTE_SCHEMA.' + 'ID_ATTRIBUTE.IDENTIFIED_ITEM')) <= 1;
+  END_ENTITY;
+
+  ENTITY shape_aspect_occurrence
+    SUBTYPE OF (shape_aspect);
+    definition : shape_aspect_or_characterized_object;
+  WHERE
+    WR1: acyclic_shape_aspect_occurrence(SELF,definition);
+  END_ENTITY;
+
+END_SCHEMA;

@@ -1,0 +1,56 @@
+@startuml
+skinparam groupInheritance 2
+!pragma layout smetana
+hide empty members
+
+class surface {
+}
+
+class bounded_surface {
+}
+
+class b_spline_surface {
+  +u_degree : INTEGER
+  +v_degree : INTEGER
+  +control_points_list : LIST[2:?] OF LIST[2:?] OF cartesian_point
+  +surface_form : b_spline_surface_form
+  +u_closed : LOGICAL
+  +v_closed : LOGICAL
+  +self_intersect : LOGICAL
+  +u_upper : INTEGER
+  +v_upper : INTEGER
+  +control_points : ARRAY[0:u_upper] OF ARRAY[0:v_upper] OF cartesian_point
+}
+
+class rational_b_spline_surface {
+  +weights_data : LIST[2:?] OF LIST[2:?] OF REAL
+  +weights : ARRAY[0:u_upper] OF ARRAY[0:v_upper] OF REAL
+}
+
+class curve_bounded_surface {
+  +basis_surface : surface
+  +boundaries : SET[1:?] OF boundary_curve
+  +implicit_outer : BOOLEAN
+}
+
+class composite_curve_on_surface {
+}
+
+class boundary_curve {
+}
+
+class outer_boundary_curve {
+}
+
+' Наследование
+surface <|-- bounded_surface
+
+bounded_surface <|-- b_spline_surface
+bounded_surface <|-- curve_bounded_surface
+
+b_spline_surface <|-- rational_b_spline_surface
+
+composite_curve_on_surface <|-- boundary_curve
+boundary_curve <|-- outer_boundary_curve
+
+@enduml

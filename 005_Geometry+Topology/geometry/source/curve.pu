@@ -1,0 +1,87 @@
+@startuml
+skinparam groupInheritance 2
+!pragma layout smetana
+hide empty members
+
+class geometric_representation_item {
+}
+
+class curve {
+}
+
+class line {
+  +pnt : cartesian_point
+  +dir : vector
+}
+
+class conic {
+  +position : axis2_placement
+}
+
+
+
+class pcurve {
+  +basis_surface : surface
+  +reference_to_curve : definitional_representation
+}
+
+class surface_curve {
+  +curve_3d : curve
+  +associated_geometry : LIST[1:2] OF pcurve_or_surface
+  +master_representation : preferred_surface_curve_representation
+}
+
+class offset_curve_2d {
+  +basis_curve : curve
+  +distance : length_measure
+  +self_intersect : LOGICAL
+}
+
+class curve_replica {
+  +parent_curve : curve
+  +transformation : cartesian_transformation_operator
+}
+
+class circle {
+}
+
+class ellipse {
+}
+
+class hyperbola {
+}
+
+class parabola {
+}
+
+
+class bounded_surface_curve {
+}
+
+
+class intersection_curve {
+}
+
+class seam_curve {
+}
+
+' Наследование
+geometric_representation_item <|-- curve
+
+curve <|-- line
+curve <|-- conic
+curve <|-- pcurve
+curve <|-- surface_curve
+curve <|-- offset_curve_2d
+curve <|-- curve_replica
+
+conic <|-- circle
+conic <|-- ellipse
+conic <|-- hyperbola
+conic <|-- parabola
+
+surface_curve <|-- intersection_curve
+surface_curve <|-- seam_curve
+surface_curve <|-- bounded_surface_curve
+
+@enduml

@@ -1,0 +1,34 @@
+@startuml
+!pragma layout smetana
+skinparam groupInheritance 2
+hide empty members
+
+class geometric_representation_item {
+  +dim
+}
+
+class point {
+  }
+
+class cartesian_point {
+  +coordinates : LIST[1:3] OF length_measure
+}
+
+class point_on_curve {
+  +basis_curve : curve
+  +point_parameter : parameter_value
+}
+
+class point_on_surface {
+  +basis_surface : surface
+  +point_parameter_u : parameter_value
+  +point_parameter_v : parameter_value
+}
+
+' Наследование
+geometric_representation_item <|-- point
+point <|-- cartesian_point
+point <|-- point_on_curve
+point <|-- point_on_surface
+
+@enduml

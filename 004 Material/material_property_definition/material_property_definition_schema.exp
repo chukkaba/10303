@@ -1,0 +1,191 @@
+(*
+$Id: material_property_definition_schema.exp,v 1.13 2019/01/10 22:26:11 brandon Exp $
+ISO 10303 TC184/SC4/WG12 N10209
+
+EXPRESS Source:
+ISO 10303-45 ed5 Material and other engineering properties - Material property definition schema
+
+The following permission notice and disclaimer shall be included in all copies of this EXPRESS schema ("the Schema"), 
+and derivations of the Schema:
+
+Copyright ISO 2019  All rights reserved
+Permission is hereby granted, free of charge in perpetuity, to any person obtaining a copy of the Schema,
+to use, copy, modify, merge and distribute free of charge, copies of the Schema for the purposes of developing, 
+implementing, installing and using software based on the Schema, and to permit persons to whom the Schema is furnished to do so, 
+subject to the following conditions:
+
+THE SCHEMA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCHEMA OR THE 
+USE OR OTHER DEALINGS IN THE SCHEMA.
+
+In addition, any modified copy of the Schema shall include the following notice:
+
+THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN
+ISO 10303-45 ed3 Material and other engineering properties - Material property definition schema
+AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD
+*)
+
+SCHEMA material_property_definition_schema '{iso standard 10303 part(45) version(4) object(1) material_property_definition_schema(1)}';
+
+REFERENCE FROM material_property_representation_schema
+     (material_property_representation);
+
+REFERENCE FROM measure_schema
+     (measure_with_unit);
+
+REFERENCE FROM process_property_schema
+	(action_property,
+	 resource_property);
+
+REFERENCE FROM product_definition_schema
+      (product_definition_relationship);
+
+REFERENCE FROM product_property_definition_schema
+      (characterized_definition,
+      property_definition);
+
+REFERENCE FROM qualified_measure_schema
+     (maths_value_with_unit);
+
+REFERENCE FROM shape_dimension_schema
+	(dimensional_location,
+	 dimensional_size);     
+
+REFERENCE FROM support_resource_schema
+     (label,
+      text,
+      bag_to_set);
+
+TYPE characterized_material_property = SELECT
+  (material_property_representation,
+   product_material_composition_relationship);
+END_TYPE;
+
+TYPE characterized_product_composition_value = SELECT
+  (maths_value_with_unit,
+   measure_with_unit);
+END_TYPE;
+
+TYPE generic_property_definition_select = SELECT
+  (property_definition,
+   action_property,
+   resource_property,
+   dimensional_location,
+   dimensional_size);
+END_TYPE;
+   
+ENTITY generic_property_relationship;
+  name              : label;
+  description       : text;
+  relating 			: generic_property_definition_select;
+  related  			: generic_property_definition_select;
+  relation_type : STRING;
+ WHERE
+  WR1: acyclic_generic_property_relationship (SELF, [related], 'MATERIAL_PROPERTY_DEFINITION_SCHEMA.GENERIC_PROPERTY_RELATIONSHIP');
+END_ENTITY;
+
+ENTITY material_designation; 
+  name       		: label;
+  definitions 	: SET [1:?] OF characterized_definition;
+END_ENTITY;
+
+ENTITY material_designation_characterization;
+  name       		: label;
+  description 	: text;
+  designation 	: material_designation;
+  property    	: characterized_material_property;
+END_ENTITY;
+
+ENTITY material_property
+SUBTYPE OF (property_definition);
+UNIQUE
+  UR1 : SELF\property_definition.name, SELF\property_definition.definition;
+WHERE
+  WR1 : ('PRODUCT_PROPERTY_DEFINITION_SCHEMA.CHARACTERIZED_OBJECT' IN
+          TYPEOF(SELF\property_definition.definition)) OR
+       (SIZEOF(bag_to_set(USEDIN(SELF ,
+                     'PRODUCT_PROPERTY_REPRESENTATION_SCHEMA.' +
+                     'PROPERTY_DEFINITION_REPRESENTATION.DEFINITION')) -
+              QUERY(temp <* bag_to_set(USEDIN(SELF ,
+                       'PRODUCT_PROPERTY_REPRESENTATION_SCHEMA.' +
+                       'PROPERTY_DEFINITION_REPRESENTATION.DEFINITION')) |
+                       ('MATERIAL_PROPERTY_REPRESENTATION_SCHEMA.' +
+                      'MATERIAL_PROPERTY_REPRESENTATION' IN
+                      TYPEOF(temp)))) = 0);
+END_ENTITY;
+
+ENTITY product_material_composition_relationship
+SUBTYPE OF (product_definition_relationship);
+  class        	       : label;
+  constituent_amount  	: SET [1:?] OF characterized_product_composition_value;
+  composition_basis    : label;
+  determination_method : text;
+END_ENTITY;
+
+ENTITY property_definition_relationship;
+  name                       	: label;
+  description                 	: text;
+  relating_property_definition 	: property_definition;
+  related_property_definition  	: property_definition;
+END_ENTITY;
+
+FUNCTION acyclic_generic_property_relationship
+  (relation          : generic_property_relationship;
+   relatives         : SET [1:?] OF generic_property_definition_select;
+   specific_relation : STRING) : LOGICAL;
+  LOCAL
+    x                : SET OF generic_property_relationship;
+  END_LOCAL;
+  IF relation.relating IN 
+            relatives THEN
+    RETURN (FALSE);
+  END_IF;             -- IN is based in instance equality
+  x := QUERY (gpr <* bag_to_set (USEDIN
+       (relation.relating,
+        'MATERIAL_PROPERTY_DEFINITION_SCHEMA.' +
+        'GENERIC_PROPERTY_RELATIONSHIP.' +
+        'RELATED')) |
+         specific_relation IN TYPEOF (gpr));
+  REPEAT I := 1 TO HIINDEX(x);             -- pre-checked loop
+    IF NOT acyclic_generic_property_relationship
+      (x[i],
+       relatives + relation.relating,
+       specific_relation) THEN
+      RETURN(FALSE);
+    END_IF;
+  END_REPEAT;
+  RETURN(TRUE);
+END_FUNCTION;  -- acyclic_generic_property_relationship
+
+FUNCTION acyclic_property_definition_relationship
+  (relation          : property_definition_relationship;
+   relatives         : SET [1:?] OF property_definition;
+   specific_relation : STRING) : LOGICAL;
+  LOCAL
+    x                : SET OF property_definition_relationship;
+  END_LOCAL;
+  IF relation.relating_property_definition IN 
+            relatives THEN
+    RETURN (FALSE);
+  END_IF;             -- IN is based in instance equality
+  x := QUERY (pd <* bag_to_set (USEDIN
+       (relation.relating_property_definition,
+        'MATERIAL_PROPERTY_DEFINITION_SCHEMA.' +
+        'PROPERTY_DEFINITION_RELATIONSHIP.' +
+        'RELATED_PROPERTY_DEFINITION')) |
+         specific_relation IN TYPEOF (pd));
+  REPEAT I := 1 TO HIINDEX(x);             -- pre-checked loop
+    IF NOT acyclic_property_definition_relationship
+      (x[i],
+       relatives + relation.relating_property_definition,
+       specific_relation) THEN
+      RETURN(FALSE);
+    END_IF;
+  END_REPEAT;
+  RETURN(TRUE);
+END_FUNCTION;  -- acyclic_property_definition_relationship
+
+END_SCHEMA;    -- material_property_definition_schema

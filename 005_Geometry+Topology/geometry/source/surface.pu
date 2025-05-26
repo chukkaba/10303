@@ -1,0 +1,86 @@
+@startuml
+!pragma layout smetana
+skinparam groupInheritance 2
+hide empty members
+
+class surface {
+}
+
+class bounded_surface {
+}
+
+class surface_replica {
+}
+
+class elementary_surface {
+  +position : axis2_placement_3d
+}
+
+class plane {
+}
+
+class cylindrical_surface {
+  +radius : positive_length_measure
+}
+
+class conical_surface {
+  +radius : length_measure
+  +semi_angle : plane_angle_measure
+WHERE
+  WR1: radius >= 0.0;
+}
+
+class spherical_surface {
+  +radius : positive_length_measure
+}
+
+class toroidal_surface {
+  +major_radius : positive_length_measure
+  +minor_radius : positive_length_measure
+}
+
+class degenerate_toroidal_surface {
+  +select_outer : BOOLEAN
+WHERE
+  WR1: major_radius < minor_radius;
+}
+
+class swept_surface {
+  +swept_curve : curve
+}
+
+class surface_of_linear_extrusion {
+  +extrusion_axis : vector
+  --IP1:
+}
+
+class surface_of_revolution {
+  +axis_position : axis1_placement
+  +axis_line : line 
+}
+
+class offset_surface {
+  +basis_surface : surface
+  +distance : length_measure
+  +self_intersect : LOGICAL
+}
+
+' Наследование
+surface <|-- bounded_surface
+surface <|-- elementary_surface
+surface <|-- swept_surface
+surface <|-- offset_surface
+surface <|-- surface_replica
+
+elementary_surface <|-- plane
+elementary_surface <|-- cylindrical_surface
+elementary_surface <|-- conical_surface
+elementary_surface <|-- spherical_surface
+elementary_surface <|-- toroidal_surface
+
+toroidal_surface <|-- degenerate_toroidal_surface
+
+swept_surface <|-- surface_of_linear_extrusion
+swept_surface <|-- surface_of_revolution
+
+@enduml

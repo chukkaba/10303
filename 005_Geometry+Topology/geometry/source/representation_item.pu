@@ -1,0 +1,82 @@
+@startuml
+!pragma layout smetana
+skinparam groupInheritance 2
+hide empty members
+
+class representation_context {
+  }
+
+class geometric_representation_context {
+  +coordinate_space_dimension : dimension_count
+}
+
+class representation_item {
+  }
+
+class geometric_representation_item {
+  +dim : dimension_count
+}
+
+class vector {
+  +orientation : direction
+  +magnitude : length_measure
+}
+
+class placement {
+ 
+}
+
+class point {
+  }
+
+
+class curve {
+ }
+
+class surface {
+ }
+
+class volume {
+  }
+
+class geometric_representation_item {
+}
+
+class functionally_defined_transformation {
+}
+
+class cartesian_transformation_operator {
+  +axis1 : OPTIONAL direction
+  +axis2 : OPTIONAL direction
+  +local_origin : cartesian_point
+  +scale : OPTIONAL REAL
+  -scl : REAL
+}
+
+class cartesian_transformation_operator_3d {
+  +axis3 : OPTIONAL direction
+  -u : LIST[3:3] OF direction
+}
+
+class cartesian_transformation_operator_2d {
+  -u : LIST[2:2] OF direction
+}
+
+' Наследование
+functionally_defined_transformation <|-- cartesian_transformation_operator
+
+cartesian_transformation_operator <|-- cartesian_transformation_operator_3d
+cartesian_transformation_operator <|-- cartesian_transformation_operator_2d
+
+representation_context <|-- geometric_representation_context
+representation_item <|-- geometric_representation_item
+
+geometric_representation_item <|-- vector
+geometric_representation_item <|-- placement
+geometric_representation_item <|-- point
+geometric_representation_item <|-- cartesian_transformation_operator
+geometric_representation_item <|-- curve
+geometric_representation_item <|-- surface
+geometric_representation_item <|-- volume
+
+@enduml

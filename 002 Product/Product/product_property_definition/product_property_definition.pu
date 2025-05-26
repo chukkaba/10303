@@ -1,0 +1,114 @@
+@startuml
+
+' Абстрактные классы для SELECT типов
+abstract class characterized_definition
+abstract class characterized_item
+abstract class characterized_product_definition
+abstract class derived_property_select
+abstract class shape_aspect_or_characterized_object
+abstract class shape_definition
+abstract class internal_or_reflected_shape_aspect
+abstract class multi_or_next_assembly_usage_occurrence
+
+' Сущности
+class characterized_object {
+  name : label
+  description : OPTIONAL text
+}
+
+class characterized_object_relationship {
+  name : label
+  description : OPTIONAL text
+  relating_object : characterized_object
+  related_object : characterized_object
+}
+
+class component_path_shape_aspect extends shape_aspect {
+  location : multi_or_next_assembly_usage_occurrence
+  component_shape_aspect : internal_or_reflected_shape_aspect
+}
+
+class general_property {
+  id : identifier
+  name : label
+  description : OPTIONAL text
+}
+
+class general_property_association {
+  name : label
+  description : OPTIONAL text
+  base_definition : general_property
+  derived_definition : derived_property_select
+}
+
+class general_property_relationship {
+  name : label
+  description : OPTIONAL text
+  relating_property : general_property
+  related_property : general_property
+}
+
+class product_definition_shape extends property_definition
+
+class property_definition {
+  name : label
+  description : OPTIONAL text
+  definition : characterized_definition
+  id : identifier
+}
+
+class shape_aspect {
+  name : label
+  description : OPTIONAL text
+  of_shape : product_definition_shape
+  product_definitional : LOGICAL
+  id : identifier
+}
+
+class shape_aspect_occurrence extends shape_aspect {
+  definition : shape_aspect_or_characterized_object
+}
+
+' Связи между SELECT типами и сущностями
+characterized_item <|-- item_identified_representation_usage
+characterized_product_definition <|-- product_definition
+characterized_product_definition <|-- product_definition_occurrence
+characterized_product_definition <|-- product_definition_relationship
+characterized_product_definition <|-- product_definition_relationship_relationship
+derived_property_select <|-- property_definition
+shape_aspect_or_characterized_object <|-- shape_aspect
+shape_aspect_or_characterized_object <|-- characterized_object
+shape_definition <|-- product_definition_shape
+shape_definition <|-- shape_aspect
+shape_definition <|-- shape_aspect_relationship
+internal_or_reflected_shape_aspect <|-- shape_aspect
+internal_or_reflected_shape_aspect <|-- identifier
+multi_or_next_assembly_usage_occurrence <|-- multi_level_reference_designator
+multi_or_next_assembly_usage_occurrence <|-- next_assembly_usage_occurrence
+
+' Ограничения на уникальность и производные атрибуты
+'note right of component_path_shape_aspect::location
+ ' UNIQUE UR1 : location, component_shape_aspect
+'end note
+
+'note right of product_definition_shape::SELF\property_definition.definition
+'  UNIQUE UR1: SELF\property_definition.definition
+ ' WR1: SIZEOF(['PRODUCT_PROPERTY_DEFINITION_SCHEMA.CHARACTERIZED_PRODUCT_DEFINITION', 'PRODUCT_PROPERTY_DEFINITION_SCHEMA.CHARACTERIZED_OBJECT'] * TYPEOF(SELF\property_definition.definition)) > 0
+'end note
+
+'note right of property_definition::SELF
+ ' DERIVE id : identifier := get_id_value(SELF)
+ ' WR1: SIZEOF(USEDIN(SELF, 'BASIC_ATTRIBUTE_SCHEMA.' + 'ID_ATTRIBUTE.IDENTIFIED_ITEM')) <= 1
+'end note
+
+note right of shape_aspect::SELF
+  DERIVE id : identifier := get_id_value(SELF)
+  UNIQUE UR1: id, of_shape
+  WR1: SIZEOF(USEDIN(SELF, 'BASIC_ATTRIBUTE_SCHEMA.' + 'ID_ATTRIBUTE.IDENTIFIED_ITEM')) <= 1
+end note
+
+'note right of shape_aspect_occurrence::SELF, definition
+'  WHERE WR1: acyclic_shape_aspect_occurrence(SELF,definition)
+'end note
+
+@enduml

@@ -1,0 +1,97 @@
+(*
+$Id: document_schema.exp,v 1.15 2014/03/04 00:30:33  Exp $
+ISO 10303 TC184/SC4/WG12 N8369
+
+EXPRESS Source:
+ISO 10303-41 ed4 Fundamentals of product description and support - Document schema
+
+The following permission notice and disclaimer shall be included in all copies of this EXPRESS schema ("the Schema"), 
+and derivations of the Schema:
+
+Copyright ISO 2014  All rights reserved
+Permission is hereby granted, free of charge in perpetuity, to any person obtaining a copy of the Schema,
+to use, copy, modify, merge and distribute free of charge, copies of the Schema for the purposes of developing, 
+implementing, installing and using software based on the Schema, and to permit persons to whom the Schema is furnished to do so, 
+subject to the following conditions:
+
+THE SCHEMA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
+DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
+ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCHEMA OR THE 
+USE OR OTHER DEALINGS IN THE SCHEMA.
+
+In addition, any modified copy of the Schema shall include the following notice:
+
+THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN
+ISO 10303-41 ed4 Fundamentals of product description and support - Document schema
+AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD
+*)
+
+SCHEMA document_schema '{iso standard 10303 part(41) version(4) object(1) document_schema(8)}';
+  REFERENCE FROM product_definition_schema (product, product_definition, product_definition_formation);
+  REFERENCE FROM support_resource_schema (bag_to_set, identifier, label, text);
+  TYPE product_or_formation_or_definition = SELECT (product, product_definition_formation, product_definition);
+  END_TYPE;
+
+  ENTITY document;
+    id : identifier;
+    name : label;
+    description : OPTIONAL text;
+    kind : document_type;
+  INVERSE
+    representation_types : SET [0:?] OF document_representation_type FOR represented_document;
+  END_ENTITY;
+
+  ENTITY document_product_association;
+    name : label;
+    description : OPTIONAL text;
+    relating_document : document;
+    related_product : product_or_formation_or_definition;
+  END_ENTITY;
+
+  ENTITY document_relationship;
+    name : label;
+    description : OPTIONAL text;
+    relating_document : document;
+    related_document : document;
+  END_ENTITY;
+
+  ENTITY document_representation_type;
+    name : label;
+    represented_document : document;
+  END_ENTITY;
+
+  ENTITY document_type;
+    product_data_type : label;
+  END_ENTITY;
+
+  ENTITY document_usage_constraint;
+    source : document;
+    subject_element : label;
+    subject_element_value : text;
+  END_ENTITY;
+
+  ENTITY document_with_class
+    SUBTYPE OF (document);
+    class : identifier;
+  END_ENTITY;
+
+  FUNCTION acyclic_document_relationship (relation : document_relationship; relatives : SET [1:?] OF document; specific_relation : STRING):BOOLEAN;
+    LOCAL
+      x : SET OF document_relationship;
+    END_LOCAL;
+
+    IF relation.relating_document IN relatives THEN
+      RETURN (FALSE);
+    END_IF;
+    x := QUERY(doc <* bag_to_set(USEDIN(relation.relating_document, 'DOCUMENT_SCHEMA.' + 'DOCUMENT_RELATIONSHIP.' + 'RELATED_DOCUMENT')) | specific_relation IN TYPEOF(doc));
+    REPEAT i := 1 TO HIINDEX(x);
+      IF NOT acyclic_document_relationship(x[i], relatives + relation.relating_document, specific_relation) THEN
+        RETURN (FALSE);
+      END_IF;
+    END_REPEAT;
+    RETURN (TRUE);
+  END_FUNCTION;
+
+END_SCHEMA;

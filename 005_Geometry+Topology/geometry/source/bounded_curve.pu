@@ -1,0 +1,55 @@
+@startuml
+skinparam groupInheritance 2
+!pragma layout smetana
+hide empty members
+
+class curve {
+}
+
+class bounded_curve {
+}
+
+class polyline {
+}
+
+class trimmed_curve {
+  +basis_curve : curve
+  +trim_1 : SET[1:2] OF trimming_select
+  +trim_2 : SET[1:2] OF trimming_select
+  +sense_agreement : BOOLEAN
+  +master_representation : trimming_preference
+}
+
+class b_spline_curve {
+  +degree : INTEGER
+  +control_points_list : LIST[2:?] OF cartesian_point
+  +curve_form : b_spline_curve_form
+  +closed_curve : LOGICAL
+  +self_intersect : LOGICAL
+  +upper_index_on_control_points : INTEGER
+  +control_points : ARRAY[0:upper_index_on_control_points] OF cartesian_point
+}
+
+class rational_b_spline_curve {
+  +weights_data : LIST[2:?] OF REAL
+  +weights : ARRAY[0:upper_index_on_control_points] OF REAL
+}
+
+class bounded_pcurve {
+}
+
+class bounded_surface_curve {
+}
+
+' Наследование
+curve <|-- bounded_curve
+
+bounded_curve <|-- polyline
+bounded_curve <|-- trimmed_curve
+bounded_curve <|-- b_spline_curve
+bounded_curve <|-- bounded_pcurve
+bounded_curve <|-- bounded_surface_curve
+
+b_spline_curve <|-- rational_b_spline_curve
+
+@enduml
