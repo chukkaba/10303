@@ -1,0 +1,32 @@
+@startuml
+
+
+
+class product_definition {
+  +id : identifier
+  +description : OPTIONAL text
+  +formation : product_definition_formation
+  +frame_of_reference : product_definition_context
+}
+
+class product_definition_formation {
+}
+
+class product_definition_relationship {
+  +id : identifier
+  +name : label
+  +description : OPTIONAL text
+  +relating_product_definition : product_definition_or_reference
+  +related_product_definition : product_definition_or_reference
+}
+
+
+
+' Связи между классами
+
+product_definition "n" -- "1" product_definition_formation : formation
+product_definition_relationship --> product_definition : relating_product_definition
+product_definition_relationship --> product_definition : related_product_definition
+
+
+@enduml

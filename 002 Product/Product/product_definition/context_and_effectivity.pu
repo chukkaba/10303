@@ -1,0 +1,32 @@
+@startuml
+
+
+
+class product_definition_context_association {
+  
+}
+
+class product_definition_context_role {
+  +name : label
+  +description : OPTIONAL text
+}
+
+class product_definition_effectivity {
+ 
+}
+
+
+' Наследование
+
+
+product_definition_effectivity --|> effectivity
+
+' Ассоциации
+product_definition_context_association --> product_definition : definition
+product_definition_context_association --> product_definition_context : frame_of_reference
+product_definition_context_association --> product_definition_context_role : role
+
+product_definition_effectivity --> product_definition_relationship : usage
+
+
+@enduml

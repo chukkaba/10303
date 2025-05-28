@@ -1,0 +1,41 @@
+@startuml
+
+class product {
+  +id : identifier
+  +name : label
+  +description : OPTIONAL text
+  +frame_of_reference : SET [1:?] OF product_context
+}
+class product_relationship {
+  +id : identifier
+  +name : label
+  +description : OPTIONAL text
+}
+class product_category {
+  +name : label
+  +description : OPTIONAL text
+ }
+
+class product_related_product_category {
+  
+}
+
+class product_category_relationship {
+  +name : label
+  +description : OPTIONAL text
+ }
+
+' Наследование
+product_category <|-- product_related_product_category
+
+' Связи между классами
+product_category <-- product_category_relationship : category
+product_category <-- product_category_relationship : sub_category
+
+product_relationship --> product : relating_product
+product_relationship --> product : related_product
+
+' Связь между product и product_related_product_category
+product "n" -- "1" product_related_product_category : products
+
+@enduml
