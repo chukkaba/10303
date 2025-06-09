@@ -15,14 +15,17 @@ class cartesian_point {
 }
 
 class point_on_curve {
-  +basis_curve : curve
-  +point_parameter : parameter_value
+  +parameter : parameter_value
+}
+
+class curve {
 }
 
 class point_on_surface {
-  +basis_surface : surface
   +point_parameter_u : parameter_value
   +point_parameter_v : parameter_value
+}
+class surface {
 }
 
 ' Наследование
@@ -30,5 +33,7 @@ geometric_representation_item <|-- point
 point <|-- cartesian_point
 point <|-- point_on_curve
 point <|-- point_on_surface
-
+' Связи
+point_on_curve --> curve : basis_curve
+point_on_surface --> surface : basis_surface
 @enduml
