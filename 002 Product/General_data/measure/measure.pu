@@ -1,0 +1,49 @@
+@startuml
+!pragma layout smetana
+skinparam groupInheritance 2
+hide empty members
+top to bottom direction
+
+
+
+class measure_value {
+}
+
+class unit {
+}
+
+
+class named_unit{
+    +dimensions : dimensional_exponents
+}
+
+' Наследование от unit
+
+
+
+' Сущности
+class global_unit_assigned_context {
+  -units : SET [1:?] OF unit
+}
+
+class measure_with_unit {
+}
+
+class plane_angle_unit{
+}
+
+' Наследование
+global_unit_assigned_context -up-|> representation_context
+
+plane_angle_unit -up-|> named_unit
+
+named_unit -up-|> unit
+
+' Ассоциации
+global_unit_assigned_context --> unit : units
+measure_with_unit -right-> unit : unit_component
+measure_with_unit --> measure_value : value_component
+
+
+
+@enduml

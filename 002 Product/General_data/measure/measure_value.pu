@@ -1,0 +1,54 @@
+@startuml
+!pragma layout smetana
+skinparam groupInheritance 4
+hide empty members
+
+' Базовый класс для measure_value
+class measure_value {
+  
+}
+
+' Наследование от measure_value
+
+descriptive_measure -up-|> measure_value
+length_measure -up-|> measure_value
+parameter_value -up-|> measure_value
+plane_angle_measure -up-|> measure_value
+positive_length_measure --|> measure_value
+positive_plane_angle_measure --|> measure_value
+positive_ratio_measure --|> measure_value
+ratio_measure -up-|> measure_value
+
+' Подклассы measure_value
+class descriptive_measure {
+  value : STRING
+}
+
+class length_measure {
+  value : REAL
+}
+
+class parameter_value {
+  value : REAL
+}
+
+class plane_angle_measure {
+  value : REAL
+}
+
+class positive_length_measure {
+  value : non_negative_length_measure
+}
+
+class positive_plane_angle_measure {
+  value : plane_angle_measure
+}
+
+class positive_ratio_measure {
+  value : ratio_measure
+}
+
+class ratio_measure {
+  value : REAL
+}
+@enduml
