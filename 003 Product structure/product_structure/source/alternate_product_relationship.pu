@@ -1,0 +1,18 @@
+@startuml
+!pragma layout smetana
+skinparam groupInheritance 2
+hide empty members
+top to bottom direction
+
+
+class alternate_product_relationship {
+  name        : label
+  definition  : OPTIONAL text
+  basis       : text
+}
+class product
+
+
+
+alternate_product_relationship -right-> product : base
+alternate_product_relationship -right-> product : alternate

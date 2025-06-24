@@ -1,0 +1,44 @@
+@startuml
+
+!pragma layout smetana
+'skinparam groupInheritance 2
+hide empty members
+
+
+class product_definition_relationship
+
+class assembly_component_usage {
+  reference_designator : OPTIONAL identifier
+} 
+
+class make_from_usage_option {
+  ranking           : INTEGER
+  ranking_rationale : text
+  quantity          : measure_with_unit
+} 
+
+'class make_from_usage_option_group
+
+
+
+class product_definition_usage
+
+class product_definition_usage_relationship
+
+'product_definition_occurrence_reference_with_local_representation -up-|> generic_product_definition_reference
+
+' Связи
+
+'make_from_usage_option_group -up-> make_from_usage_option : members S[2:?]
+product_definition_usage_relationship -right-> product_definition_usage : relating
+product_definition_usage_relationship -right-> product_definition_usage : related
+
+
+' Наследование 
+make_from_usage_option -up-|> product_definition_usage
+
+assembly_component_usage -up-|> product_definition_usage
+product_definition_usage -up-|> product_definition_relationship
+product_definition_usage_relationship -up-|> product_definition_relationship_relationship
+
+@enduml

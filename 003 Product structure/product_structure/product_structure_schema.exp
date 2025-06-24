@@ -30,7 +30,7 @@ AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD
 
 SCHEMA product_structure_schema '{iso standard 10303 part(44) version(6) object(1) product_structure_schema(1)}';
 
-  REFERENCE FROM measure_schema   -- ISO 10303-41
+  (*REFERENCE FROM measure_schema   -- ISO 10303-41
      (measure_with_unit);
 
   REFERENCE FROM product_definition_schema   -- ISO 10303-41
@@ -54,7 +54,7 @@ END_TYPE;
 
 TYPE product_definition_or_reference_or_occurrence = SELECT BASED_ON product_definition_or_reference WITH (
   product_definition_occurrence);
-END_TYPE;
+END_TYPE;*)
 
 ENTITY alternate_product_relationship;
   name        : label;
@@ -255,7 +255,7 @@ WHERE
        'PRODUCT_STRUCTURE_SCHEMA.SPECIFIED_HIGHER_USAGE_OCCURRENCE']
        * TYPEOF(upper_usage)) = 1;
 END_ENTITY;
-
+(*
 FUNCTION acyclic_product_definition_specified_occurrence
           (pdso : product_definition_specified_occurrence; definition : product_definition_occurrence) : BOOLEAN;
     IF NOT (('PRODUCT_STRUCTURE_SCHEMA.PRODUCT_DEFINITION_SPECIFIED_OCCURRENCE') IN TYPEOF(definition)) THEN
@@ -345,6 +345,6 @@ REPEAT i := 1 to SIZEOF(links) - 1;
 
 END_REPEAT;
 RETURN(TRUE);
-END_FUNCTION;
+END_FUNCTION;*)
 
 END_SCHEMA; -- product_structure
