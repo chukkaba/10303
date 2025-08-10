@@ -14,27 +14,36 @@ class line {
   +dir : vector
 }
 
-class conic {
+class ellipse {
   +position : axis2_placement
+  +major_radius : length_measure
+  +minor_radius : length_measure
 }
 
+class polyline {
+  + base_points : LIST[1:] OF cartesian_point
+}
 
+class rational_b_spline_curve {
+  + base_points : LIST[1:] OF cartesian_point
+  + order : count_measure
+  + knots : LIST[1:] OF ratio_measure
+  + weights : LIST[1:] OF ratio_measure
+}
+
+class direction_inverted_curve {
+  + basis_curve : curve
+}
+
+class trimmed_curve {
+  + basis_curve : curve
+  + trim_1 : point
+  + trim_2 : point
+}
 
 class pcurve {
   +basis_surface : surface
   +reference_to_curve : definitional_representation
-}
-
-class surface_curve {
-  +curve_3d : curve
-  +associated_geometry : LIST[1:2] OF pcurve_or_surface
-  +master_representation : preferred_surface_curve_representation
-}
-
-class offset_curve_2d {
-  +basis_curve : curve
-  +distance : length_measure
-  +self_intersect : LOGICAL
 }
 
 class curve_replica {
@@ -42,46 +51,17 @@ class curve_replica {
   +transformation : cartesian_transformation_operator
 }
 
-class circle {
-}
-
-class ellipse {
-}
-
-class hyperbola {
-}
-
-class parabola {
-}
-
-
-class bounded_surface_curve {
-}
-
-
-class intersection_curve {
-}
-
-class seam_curve {
-}
 
 ' Наследование
 geometric_representation_item <|-- curve
 
 curve <|-- line
-curve <|-- conic
+curve <|-- ellipse
+curve <|-- polyline
+curve <|-- rational_b_spline_curve
+curve <|-- direction_inverted_curve
+curve <|-- trimmed_curve
 curve <|-- pcurve
-curve <|-- surface_curve
-curve <|-- offset_curve_2d
 curve <|-- curve_replica
-
-conic <|-- circle
-conic <|-- ellipse
-conic <|-- hyperbola
-conic <|-- parabola
-
-surface_curve <|-- intersection_curve
-surface_curve <|-- seam_curve
-surface_curve <|-- bounded_surface_curve
 
 @enduml
