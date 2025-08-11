@@ -1,0 +1,53 @@
+@startuml
+
+'!pragma layout smetana
+'skinparam groupInheritance 2
+hide empty members
+'top to bottom direction
+
+class assembly_component_usage {
+  reference_designator : OPTIONAL identifier
+} 
+
+class quantified_assembly_component_usage {
+  quantity : measure_with_unit
+} 
+
+'class specified_higher_usage_occurrence
+
+'class one_of
+
+class multi_level_reference_designator 
+
+'class next_assembly_usage_occurrence
+
+'class promissory_usage_occurrence
+
+'class assembly_component_usage_substitute {
+ ' name              : label
+ ' definition        : OPTIONAL text
+'}
+
+'class assembly_component_usage_substitute_with_ranking {
+ ' ranking           : INTEGER
+ ' ranking_rationale : text
+'}
+
+'наследование
+'specified_higher_usage_occurrence -up-|> assembly_component_usage
+'next_assembly_usage_occurrence -up-|> assembly_component_usage
+multi_level_reference_designator -up-|> assembly_component_usage
+'promissory_usage_occurrence -up-|> assembly_component_usage
+
+quantified_assembly_component_usage -up-|> assembly_component_usage
+
+'assembly_component_usage -up-> assembly_component_usage_substitute : base
+'assembly_component_usage -up-> assembly_component_usage_substitute : substitute
+'assembly_component_usage_substitute <|-left- assembly_component_usage_substitute_with_ranking
+
+' связи
+'specified_higher_usage_occurrence --> assembly_component_usage : upper_usage
+'specified_higher_usage_occurrence --> next_assembly_usage_occurrence : next_usage
+multi_level_reference_designator --> next_assembly_usage_occurrence : location LIST[1:?]
+multi_level_reference_designator --> product_definition : related (leaf)
+multi_level_reference_designator --> product_definition : relating (root)

@@ -5,27 +5,7 @@ ISO 10303 TC184/SC4/WG12 N10587
 EXPRESS Source:
 ISO 10303-43 ed5 Representation structures - Representation schema
 
-The following permission notice and disclaimer shall be included in all copies of this EXPRESS schema ("the Schema"), 
-and derivations of the Schema:
 
-Copyright ISO 2021  All rights reserved
-Permission is hereby granted, free of charge in perpetuity, to any person obtaining a copy of the Schema,
-to use, copy, modify, merge and distribute free of charge, copies of the Schema for the purposes of developing, 
-implementing, installing and using software based on the Schema, and to permit persons to whom the Schema is furnished to do so, 
-subject to the following conditions:
-
-THE SCHEMA IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
-INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. 
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, 
-DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
-ARISING FROM, OUT OF OR IN CONNECTION WITH THE SCHEMA OR THE 
-USE OR OTHER DEALINGS IN THE SCHEMA.
-
-In addition, any modified copy of the Schema shall include the following notice:
-
-THIS SCHEMA HAS BEEN MODIFIED FROM THE SCHEMA DEFINED IN
-ISO 10303-43 ed5 Representation structures - Representation schema
-AND SHOULD NOT BE INTERPRETED AS COMPLYING WITH THAT STANDARD
 *)
 
 SCHEMA representation_schema '{iso standard 10303 part(43) version(7) object(1) representation_schema(1)}';
@@ -188,11 +168,11 @@ REFERENCE FROM support_resource_schema   -- ISO 10303-41
       representations_in_context : SET [1:?] OF representation FOR context_of_items;
   END_ENTITY;
 
-  ENTITY representation_context_reference;
+  (*ENTITY representation_context_reference;
       context_identifier : identifier;
    INVERSE
       representations_in_context : SET [1:?] OF representation_reference FOR context_of_items;
-  END_ENTITY;
+  END_ENTITY;*)
 
   ENTITY representation_item
     SUPERTYPE OF(ONEOF(binary_representation_item,
@@ -220,10 +200,10 @@ REFERENCE FROM support_resource_schema   -- ISO 10303-41
       WR1: item_in_context(mapping_origin, mapped_representation\representation.context_of_items);
   END_ENTITY;
 
-  ENTITY representation_reference;
+  (*ENTITY representation_reference;
     id                                : identifier;
     context_of_items                  : representation_context_reference;
-  END_ENTITY;
+  END_ENTITY;*)
 
   ENTITY representation_relationship;
       name        : label;
@@ -268,7 +248,7 @@ REFERENCE FROM support_resource_schema   -- ISO 10303-41
         ))) = 0;
   END_ENTITY;
 
-  FUNCTION acyclic_mapped_representation
+  (*FUNCTION acyclic_mapped_representation
     (mi : mapped_item) : BOOLEAN;
     LOCAL
       rms : SET OF representation_map;
@@ -445,6 +425,6 @@ REFERENCE FROM support_resource_schema   -- ISO 10303-41
         RETURN (TRUE);
       END_IF;
     END_IF;
-  END_FUNCTION;
+  END_FUNCTION;*)
 
 END_SCHEMA;
