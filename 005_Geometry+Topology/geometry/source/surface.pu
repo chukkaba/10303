@@ -57,6 +57,8 @@ WHERE
 class ration_b_spline_surface {
   + degree_u : count_measure
   + degree_v : count_measure
+  + closed_u : BOOLEAN
+  + closed_v : BOOLEAN
   + base_points : LIST[1:LIST[1:]] of point
   + knots_u : LIST[1:] of ratio_measure
   + knots_v : LIST[1:] of ratio_measure
@@ -79,6 +81,7 @@ class offset_surface {
 
 class surface_replica {
   +basis_surface : surface
+  +transformation : cartesian_transformation_operator
 }
 
 ' Наследование
