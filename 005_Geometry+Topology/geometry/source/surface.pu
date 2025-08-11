@@ -21,7 +21,7 @@ class cylindrical_surface {
   +radius : length_measure
   +semi_angle : plane_angle_measure
 WHERE
-  WR1: radius >= 0.0;
+  WR1: radius > 0.0;
 }
 
 
@@ -30,15 +30,22 @@ class conical_surface {
   +semi_angle : plane_angle_measure
 WHERE
   WR1: radius >= 0.0;
+  WR2: semi_angle > -PI*0.5;
+  WR3: semi_angle < PI*0.5;
 }
 
 class spherical_surface {
   +radius : positive_length_measure
+  WHERE
+  WR1: radius > 0.0;
 }
 
 class toroidal_surface {
   +major_radius : positive_length_measure
   +minor_radius : positive_length_measure
+  WHERE
+  WR1: major_radius >= 0.0;
+  WR1: minor_radius >= 0.0;
 }
 
 class degenerate_toroidal_surface {
@@ -47,18 +54,21 @@ WHERE
   WR1: major_radius < minor_radius;
 }
 
-class swept_surface {
-  +swept_curve : curve
+class ration_b_spline_surface {
+  + degree_u : count_measure
+  + degree_v : count_measure
+  + base_points : LIST[1:LIST[1:]] of point
+  + knots_u : LIST[1:] of ratio_measure
+  + knots_v : LIST[1:] of ratio_measure
+  + weights : LIST[1:LIST[1:]] of ratio_measure
+  WHERE
+  WR1: degree_u > 0;
+  WR2: degree_v > 0;
 }
 
-class surface_of_linear_extrusion {
-  +extrusion_axis : vector
-  --IP1:
-}
-
-class surface_of_revolution {
-  +axis_position : axis1_placement
-  +axis_line : line 
+class curve_bounded_surface {
+  +basis_surface : surface
+  +bounds : LIST[1:] of pcurve
 }
 
 class offset_surface {
@@ -68,12 +78,14 @@ class offset_surface {
 }
 
 class surface_replica {
+  +basis_surface : surface
 }
 
 ' Наследование
 surface <|-- bounded_surface
 surface <|-- elementary_surface
-surface <|-- swept_surface
+surface <|-- ration_b_spline_surface
+surface <|-- curve_bounded_surface
 surface <|-- offset_surface
 surface <|-- surface_replica
 
@@ -84,8 +96,5 @@ elementary_surface <|-- spherical_surface
 elementary_surface <|-- toroidal_surface
 
 toroidal_surface <|-- degenerate_toroidal_surface
-
-swept_surface <|-- surface_of_linear_extrusion
-swept_surface <|-- surface_of_revolution
 
 @enduml
