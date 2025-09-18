@@ -1,0 +1,64 @@
+@startuml
+!pragma layout smetana
+skinparam groupInheritance 2
+hide empty members
+
+class boundary_rep_item {
+}
+
+class boundary_rep_body {
+  +outer_shell : outer_boundary_rep_shell
+  +shells : LIST[0:] of inner_boundary_rep_shell
+}
+
+class boundary_rep_shell {
+  +faces : LIST[1:] of boundary_rep_face
+}
+
+class outer_boundary_rep_shell {
+}
+
+class inner_boundary_rep_shell {
+}
+
+class boundary_rep_face {
+  +face_geometry : surface
+  +face_same_orientation : BOOLEAN
+  +face_outer_bound : boundary_rep_loop
+  +face_inner_bounds : LIST[0:] of boundary_rep_loop
+}
+
+class boundary_rep_loop {
+  +oriented_edges : LIST[1:] of boundary_rep_oriented_edge
+}
+
+class boundary_rep_oriented_edge {
+  +curve_edge : boundary_rep_curve_edge
+  +same_orietnation : BOOLEAN
+}
+
+
+class boundary_rep_curve_edge {
+  +edge_geometry : curve
+  +curve_edge_same_orientation : BOOLEAN
+  +begin_vertex : boundary_rep_vertex
+  +end_vertex : boundary_rep_vertex
+}
+
+class boundary_rep_vertex {
+  +vertex_geometry : cartesian_point
+  +radius : positive_length_measure
+}
+
+' Наследование
+boundary_rep_item <|-- boundary_rep_shell
+boundary_rep_item <|-- boundary_rep_face
+boundary_rep_item <|-- boundary_rep_loop
+boundary_rep_item <|-- boundary_rep_oriented_edge
+boundary_rep_item <|-- boundary_rep_curve_edge
+boundary_rep_item <|-- boundary_rep_vertex
+
+boundary_rep_shell <|-- outer_boundary_rep_shell
+boundary_rep_shell <|-- inner_boundary_rep_shell
+
+@enduml
