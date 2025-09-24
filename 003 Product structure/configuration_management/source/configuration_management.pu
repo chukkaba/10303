@@ -1,0 +1,57 @@
+@startuml
+
+class configuration_design_item {
+}
+
+class configurable_item {
+  id : identifier
+  name : label
+  description : text?
+  item_concept : product_concept
+  purpose : label?
+}
+
+class configuration_design {
+  name : label
+  description : text?
+}
+
+class configuration_effectivity {
+}
+
+class configuration_item {
+  id : identifier
+  name : label
+  description : text?
+  
+  purpose : label?
+}
+
+class configuration_item_relationship {
+  name : label
+  description : text?
+}
+
+enum configuration_design_item {
+   product_definition
+   product_definition_formation
+   product_definition_occurrence
+}
+
+configuration_item <|-- configurable_item
+configuration_effectivity  <|-- product_definition_effectivity
+
+
+configuration_item  --> product_concept : item_concept 
+
+configurable_item "1" -- "1..*" product_concept_feature_association : item_concept_feature
+
+configuration_design --> configuration_item : configuration
+configuration_design --> configuration_design_item : design
+
+configuration_effectivity --> configuration_design : configuration
+
+configuration_item_relationship --> configuration_item : relating_configuration_item
+configuration_item_relationship --> configuration_item : related_configuration_item
+
+@enduml
