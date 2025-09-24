@@ -14,16 +14,22 @@ class unit {
 
 
 class named_unit{
-    +dimensions : dimensional_exponents
+   
 }
 
-' Наследование от unit
-
+class dimensional_exponents {
+    length_exponent : REAL
+    mass_exponent : REAL
+    time_exponent : REAL
+    electric_current_exponent : REAL
+    thermodynamic_temperature_exponent : REAL
+    amount_of_substance_exponent : REAL
+    luminous_intensity_exponent : REAL
+  }
 
 
 ' Сущности
 class global_unit_assigned_context {
-  -units : SET [1:?] OF unit
 }
 
 class measure_with_unit {
@@ -43,6 +49,7 @@ named_unit -up-|> unit
 global_unit_assigned_context --> unit : units
 measure_with_unit -right-> unit : unit_component
 measure_with_unit --> measure_value : value_component
+named_unit -right-> dimensional_exponents : dimentions
 
 
 

@@ -1,0 +1,27 @@
+@startuml
+
+class context_dependent_shape_representation {
++name
++description
+}
+
+class shape_representation_relationship {
+}
+
+class specified_occurrence_context_dependent_shape_representation {
+}
+
+class representation_relationship
+
+class product_definition_shape
+
+class product_definition_specified_occurrence
+
+'Связи
+context_dependent_shape_representation --> shape_representation_relationship : representation_relation
+context_dependent_shape_representation --> product_definition_shape: represented_product_relation
+specified_occurrence_context_dependent_shape_representation --> product_definition_specified_occurrence : sub_element
+
+'Наследование
+shape_representation_relationship --|> representation_relationship
+specified_occurrence_context_dependent_shape_representation --|> context_dependent_shape_representation

@@ -1,0 +1,33 @@
+@startuml
+
+class shape_aspect {
+  +name
+  +description
+  +product_definitional
+}
+
+class shape_aspect_occurrence {
+}
+class constituent_shape_aspect {
+}
+
+class shape_aspect_relationship {
+    +id
+    +name
+    description
+}
+
+' Наследование
+shape_aspect <|-- shape_aspect_occurrence
+'shape_aspect <|-- component_path_shape_aspect
+shape_aspect <|-- constituent_shape_aspect
+
+' Ассоциации
+shape_aspect --> product_definition_shape : of_shape
+shape_aspect_occurrence --> shape_aspect_or_characterized_object : definition
+'component_path_shape_aspect --> multi_or_next_assembly_usage_occurrence : location
+'component_path_shape_aspect --> internal_or_reflected_shape_aspect : component_shape_aspect
+constituent_shape_aspect --> shape_aspect : parent
+constituent_shape_aspect --> product_definition_shape : of_shape
+shape_aspect_relationship--> shape_aspect : related_shape_aspect
+shape_aspect_relationship--> shape_aspect : relating_shape_aspect

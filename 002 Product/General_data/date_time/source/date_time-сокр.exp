@@ -1,0 +1,146 @@
+
+
+
+  TYPE dts_description_attribute_select = SELECT BASED_ON description_attribute_select WITH (
+    date_role,
+    date_time_role,
+    time_role);
+  END_TYPE;
+
+TYPE ahead_or_behind = ENUMERATION OF
+   (ahead,
+    exact,
+    behind);
+END_TYPE;
+
+TYPE date_time_or_event_occurrence = SELECT
+   (date_time_select,
+    event_occurrence);
+END_TYPE;
+
+TYPE date_time_select = SELECT
+   (date,
+    date_and_time,
+    local_time);
+END_TYPE;
+
+TYPE day_in_month_number = INTEGER;
+WHERE
+  WR1: {1 <= SELF <= 31};
+END_TYPE;
+
+TYPE day_in_week_number = INTEGER;
+WHERE
+  WR1: { 1 <= SELF <= 7 };
+END_TYPE;
+
+TYPE day_in_year_number = INTEGER;
+WHERE
+  WR1: {1 <= SELF <= 366};
+END_TYPE;
+
+TYPE hour_in_day = INTEGER;
+WHERE
+  WR1: { 0 <= SELF < 24 };
+END_TYPE;
+
+TYPE minute_in_hour = INTEGER;
+WHERE
+  WR1: { 0 <= SELF <= 59 };
+END_TYPE;
+
+TYPE month_in_year_number = INTEGER;
+WHERE
+  WR1: { 1 <= SELF <= 12 };
+END_TYPE;
+
+TYPE second_in_minute = REAL;
+WHERE
+  WR1: { 0 <= SELF < 60.0 };
+END_TYPE;
+
+TYPE week_in_year_number = INTEGER;
+WHERE
+  WR1: { 1 <= SELF <= 53 };
+END_TYPE;
+
+TYPE year_number = INTEGER;
+WHERE
+  WR1: (SELF > 1581);
+END_TYPE;
+
+ENTITY calendar_date
+  SUBTYPE OF (date);
+  day_component : day_in_month_number;
+  month_component : month_in_year_number;
+END_ENTITY;
+
+ENTITY coordinated_universal_time_offset;
+  hour_offset : INTEGER;
+  minute_offset : OPTIONAL INTEGER;
+  sense : ahead_or_behind;
+END_ENTITY;
+
+ENTITY date
+  SUPERTYPE OF (ONEOF (calendar_date,
+                       ordinal_date,
+                       week_of_year_and_day_date,
+                       year_month));
+  year_component : year_number;
+END_ENTITY;
+
+ENTITY date_and_time;
+  date_component : date;
+  time_component : local_time;
+END_ENTITY;
+
+ENTITY date_role;
+  name : label;
+END_ENTITY;
+
+ENTITY date_time_role;
+  name : label;
+END_ENTITY;
+
+ENTITY event_occurrence;
+  id : identifier;
+  name : label;
+  description : OPTIONAL text;
+END_ENTITY;
+
+ENTITY event_occurrence_context_role;
+  name : label;
+  description : OPTIONAL text;
+END_ENTITY;
+
+ENTITY event_occurrence_relationship;
+  name : label;
+  description : OPTIONAL text;
+  relating_event : event_occurrence;
+  related_event : event_occurrence;
+END_ENTITY;
+
+ENTITY event_occurrence_role;
+  name : label;
+  description : OPTIONAL text;
+END_ENTITY;
+
+ENTITY local_time;
+  hour_component : hour_in_day;
+  minute_component : OPTIONAL minute_in_hour;
+  second_component : OPTIONAL second_in_minute;
+  zone : coordinated_universal_time_offset;
+END_ENTITY;
+
+
+ENTITY week_of_year_and_day_date
+  SUBTYPE OF (date);
+  week_component : week_in_year_number;
+  day_component : OPTIONAL day_in_week_number;
+ND_ENTITY;
+
+ENTITY year_month
+  SUBTYPE OF (date);
+  month_component : month_in_year_number;
+END_ENTITY;
+END_SCHEMA;

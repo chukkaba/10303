@@ -93,6 +93,8 @@ unit_component: the unit in which the physical quantity is expressed.
 
 ## masure_value
 
+![](source/measure_value.png)
+
 Тип measure_value представляет собой список альтернативных типов данных. Он предоставляет механизм для ссылки на экземпляр одного из этих типов данных. 
 
 measure_value - это значение, определенное в стандарте ISO 31-0.

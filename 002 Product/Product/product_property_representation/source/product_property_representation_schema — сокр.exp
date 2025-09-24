@@ -1,0 +1,23 @@
+SCHEMA product_property_representation_schema '{iso standard 10303 part(41) version(10) object(1) product_property_representation_schema(20)}';
+
+   ENTITY characterized_item_within_representation
+    SUBTYPE OF (characterized_object);
+    item : representation_item;
+    rep : representation;
+  END_ENTITY;
+
+  ENTITY property_definition_representation;
+    definition : represented_definition;
+    used_representation : representation;
+  END_ENTITY;
+
+  ENTITY shape_definition_representation
+    SUBTYPE OF (property_definition_representation);
+  END_ENTITY;
+
+  ENTITY shape_representation
+    SUBTYPE OF (representation);
+  END_ENTITY;
+
+ 
+END_SCHEMA;

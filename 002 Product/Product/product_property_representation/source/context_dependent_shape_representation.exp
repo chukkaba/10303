@@ -1,0 +1,14 @@
+ENTITY context_dependent_shape_representation;
+    representation_relation : shape_representation_relationship;
+    represented_product_relation : product_definition_shape;
+END_ENTITY;
+
+ ENTITY shape_representation_relationship
+    SUBTYPE OF (representation_relationship);
+  
+ END_ENTITY;
+
+ENTITY specified_occurrence_context_dependent_shape_representation
+    SUBTYPE OF (context_dependent_shape_representation);
+    sub_element : product_definition_specified_occurrence;
+END_ENTITY;
