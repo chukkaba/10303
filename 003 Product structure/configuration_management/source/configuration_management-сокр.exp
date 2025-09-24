@@ -1,0 +1,40 @@
+SCHEMA configuration_management_schema '{iso standard 10303 part(44) version(4) object(1) configuration_management_schema(3)}';
+
+    
+    
+TYPE configuration_design_item = SELECT
+   (product_definition,
+    product_definition_formation,
+    product_definition_occurrence);
+END_TYPE;
+
+ENTITY configurable_item
+  SUBTYPE OF (configuration_item);
+  item_concept_feature : SET[1:?] OF product_concept_feature_association;
+END_ENTITY;
+
+ENTITY configuration_design;
+  configuration : configuration_item;
+  design        : configuration_design_item;
+END_ENTITY;
+
+ENTITY configuration_effectivity
+  SUBTYPE OF (product_definition_effectivity);
+  configuration : configuration_design;
+END_ENTITY;
+
+ENTITY configuration_item;
+   id                  :  identifier;
+   name                :  label;
+   description         :  OPTIONAL text;
+   item_concept        :  product_concept;
+   purpose             :  OPTIONAL label;
+END_ENTITY;
+
+ENTITY configuration_item_relationship;
+  name                        : label;
+  description                 : OPTIONAL text;
+  relating_configuration_item : configuration_item;
+  related_configuration_item  : configuration_item;
+END_ENTITY;
+
