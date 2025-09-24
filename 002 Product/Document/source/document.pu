@@ -1,0 +1,55 @@
+@startuml
+
+class document {
+  +id : identifier
+  +name : label
+  -description : text
+  +kind : document_type
+}
+
+class document_product_association {
+}
+
+class document_relationship {
+name : label
+description : text
+}
+
+class document_representation_type {
+    name : label
+}
+
+class document_type {
+  product_data_type : label
+}
+
+class document_usage_constraint {
+    subject_element : label
+    subject_element_value : text
+}
+
+class document_with_class {
+  class : identifier
+}
+
+enum product_or_formation_or_definition {
+    product
+    product_definition
+    product_definition_formation
+}
+
+document <|-- document_with_class
+
+document --> document_type : kind
+
+document_product_association --> document : relating_document
+document_product_association --> product_or_formation_or_definition : related_product
+
+document_relationship --> document : relating_document
+document_relationship --> document : related_document
+
+document_representation_type --> document : represented_document
+
+document_usage_constraint --> document : source
+
+@enduml

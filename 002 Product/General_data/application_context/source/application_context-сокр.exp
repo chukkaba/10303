@@ -1,0 +1,62 @@
+  ENTITY application_context;
+    application : label;
+    description : text;
+    id : identifier;
+  END_ENTITY;
+
+  ENTITY application_context_element
+    SUPERTYPE OF (ONEOF(library_context, product_concept_context, product_context, product_definition_context));
+    name : label;
+    frame_of_reference : application_context;
+  END_ENTITY;
+
+  ENTITY application_context_relationship;
+    name : label;
+    description : OPTIONAL text;
+    relating_context : application_context;
+    related_context : application_context;
+  END_ENTITY;
+
+  ENTITY application_protocol_definition;
+    status : label;
+    application_interpreted_model_schema_name : label;
+    application_protocol_year : year_number;
+    application : application_context;
+  END_ENTITY;
+
+  ENTITY library_context
+    SUBTYPE OF (application_context_element);
+    library_reference : label;
+  END_ENTITY;
+
+  ENTITY product_concept_context
+    SUBTYPE OF (application_context_element);
+    market_segment_type : label;
+  END_ENTITY;
+
+  ENTITY product_context
+    SUBTYPE OF (application_context_element);
+    discipline_type : label;
+  END_ENTITY;
+
+  ENTITY product_definition_context
+    SUBTYPE OF (application_context_element);
+    life_cycle_stage : label;
+  END_ENTITY;
+  
+  ENTITY dependent_product_definition_exchange_context
+    ABSTRACT SUPERTYPE
+    SUBTYPE OF (product_definition_context);
+  END_ENTITY;
+
+	ENTITY identification_dependent_product_definition_exchange_context
+	  SUBTYPE OF (dependent_product_definition_exchange_context);
+	  identification_context   : exchange_identification_context_select;
+	END_ENTITY;
+
+	ENTITY language_dependent_product_definition_exchange_context
+	  SUBTYPE OF (dependent_product_definition_exchange_context);
+	  language              : language;
+	END_ENTITY;
+
+END_SCHEMA;

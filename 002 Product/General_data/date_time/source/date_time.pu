@@ -1,0 +1,52 @@
+@startuml
+
+class calendar_date {
+  day_component : day_in_month_number
+  month_component : month_in_year_number
+}
+
+class coordinated_universal_time_offset {
+  hour_offset : INTEGER
+  minute_offset : INTEGER?
+  sense : ahead_or_behind
+  actual_minute_offset : INTEGER
+}
+
+class date {
+  year_component : year_number
+}
+
+class date_and_time {
+
+}
+
+class local_time {
+  hour_component : hour_in_day
+  minute_component : minute_in_hour?
+  second_component : second_in_minute?
+
+}
+
+class week_of_year_and_day_date {
+  week_component : week_in_year_number
+  day_component : day_in_week_number?
+}
+
+class year_month {
+  month_component : month_in_year_number
+}
+
+' Связи между сущностями
+
+calendar_date --|> date
+week_of_year_and_day_date --|> date
+year_month --|> date
+
+
+date_and_time --> date : date_component
+date_and_time --> local_time : time_component
+local_time --> coordinated_universal_time_offset : zone
+
+
+
+@enduml

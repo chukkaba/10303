@@ -1,0 +1,21 @@
+class general_property_relationship {
+  name : label
+  description : OPTIONAL text
+}
+
+class general_property_association {
+  name : label
+  description : OPTIONAL text
+}
+
+class general_property {
+  id : identifier
+  name : label
+  description : OPTIONAL text
+}
+
+general_property_relationship --> general_property : relating_property
+general_property_relationship --> general_property : related_property
+
+general_property_association --> general_property : base_definition
+general_property_association --> property_definition : derived_definition

@@ -1,0 +1,33 @@
+@startuml
+
+class property_definition_representation {
+    +description
+    +name
+}
+
+class shape_definition_representation
+
+class represented_definition
+
+class representation
+
+class shape_representation {
+}
+
+enum represented_definition {
+ general_property
+ property_definition
+ property_definition_relationship
+ shape_aspect
+ shape_aspect_relationship
+}
+
+
+
+property_definition_representation <|-- shape_definition_representation
+representation <|-- shape_representation
+
+property_definition_representation  --> represented_definition : definition
+property_definition_representation  --> representation : used_representation
+shape_definition_representation  --> property_definition : definition
+shape_definition_representation  --> shape_representation : used_representation

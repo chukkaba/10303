@@ -1,0 +1,45 @@
+ ENTITY document;
+    id : identifier;
+    name : label;
+    description : OPTIONAL text;
+    kind : document_type;
+  
+  END_ENTITY;
+
+  ENTITY document_product_association;
+    name : label;
+    description : OPTIONAL text;
+    relating_document : document;
+    related_product : product_or_formation_or_definition;
+  END_ENTITY;
+
+  ENTITY document_relationship;
+    name : label;
+    description : OPTIONAL text;
+    relating_document : document;
+    related_document : document;
+  END_ENTITY;
+
+  ENTITY document_representation_type;
+    name : label;
+    represented_document : document;
+  END_ENTITY;
+
+  ENTITY document_type;
+    product_data_type : label;
+  END_ENTITY;
+
+  ENTITY document_usage_constraint;
+    source : document;
+    subject_element : label;
+    subject_element_value : text;
+  END_ENTITY;
+
+  ENTITY document_with_class
+    SUBTYPE OF (document);
+    class : identifier;
+  END_ENTITY;
+
+  
+
+END_SCHEMA;
