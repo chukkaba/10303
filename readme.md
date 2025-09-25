@@ -35,9 +35,9 @@
 
 Графические схемы ISO 10303 с указанием оставляемых и исключаемых сущностей приведены по ссылкам (рабочий материал):
 
-- геометрия и топология, а также visual_presentation: [drawio-4](https://drive.google.com/file/d/1k2lVPq3zpFvjuVSG-2OZ6wffkYibRSGy/view?usp=sharing)
 
 ### ГОСТ Р 77.302 СПЖЦ. ИМ. Общие данные об изделии
+
 Включает описание ИМ, базирующееся на следующих схемах ISO 10303-41:2022:
 - aplication_context
 - date_time
@@ -50,28 +50,40 @@
 - product_property_representation
 - representation
 - support_resourse
+
 Рабочая графическая схема включаемых сущностей: [drawio-1](https://drive.google.com/file/d/1F35RtoRhY2Rs6LxDwUZy8BeiVHYCgwPD/view?usp=sharing)
 
 ### ГОСТ Р 77.303 СПЖЦ. ИМ. Структура изделия
+
 Включает описание ИМ, базирующееся на следующих схемах ISO 10303-44:2022:
 - configuration_management
 - product_concept
 - product_structure
-Рабочая графическая схема включаемых сущностей: [drawio-2](https://app.diagrams.net/#G1ORl2QLxmgjzZSyKz7V7tCBrE0Fj6sUbl#%7B%22pageId%22%3A%22vF8REzJfIyVICd4e2HHQ%22%7D)
+
+абочая графическая схема включаемых сущностей: [drawio-2](https://app.diagrams.net/#G1ORl2QLxmgjzZSyKz7V7tCBrE0Fj6sUbl#%7B%22pageId%22%3A%22vF8REzJfIyVICd4e2HHQ%22%7D)
 
 ### ГОСТ Р 77.304 СПЖЦ. ИМ. Представление свойств изделия
+
 Включает описание ИМ, базирующееся на следующих схемах ISO 10303-43:2022:
+- representation
+- representation item
+
+Рабочая графическая схема включаемых сущностей:
 
 ### ГОСТ Р 77.305 СПЖЦ. ИМ. Материалы и их свойства
+
 Включает описание ИМ, базирующееся на следующих схемах ISO 10303-45:2019:
 - material_property_definition
 - material_property_representation
 - qualified_measure
+
 Рабочая графическая схема включаемых сущностей: [drawio-3](https://drive.google.com/file/d/1QdAzImpIu99hlYnU8tAApNredC_dyG-2/view?usp=sharing)
 
 ### ГОСТ Р 77.306 СПЖЦ. ИМ. Геометрия и топология
+
 Включает описание ИМ, базирующееся на следующих схемах ISO 10303-42:2024:
 - geometric_model
 - geometry
 - topology
+
 Рабочая графическая схема включаемых сущностей: [drawio-4](https://drive.google.com/file/d/1k2lVPq3zpFvjuVSG-2OZ6wffkYibRSGy/view?usp=sharing)
