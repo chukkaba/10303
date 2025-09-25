@@ -1,0 +1,64 @@
+@startuml
+
+class binary_representation_item {
+  binary_value : BINARY
+}
+
+class bytes_representation_item {
+  no_of_bytes : INTEGER
+}
+
+class compound_representation_item {
+  item_element : compound_item_definition
+}
+
+class mapped_item {
+  mapping_source : representation_map
+  mapping_target : representation_item
+}
+
+abstract class representation_item {
+  name : label
+}
+
+class representation_item_relationship {
+  name : label
+  description : OPTIONAL text
+  relating_representation_item : representation_item
+  related_representation_item : representation_item
+}
+
+class representation_map {
+
+}
+
+class value_representation_item {
+  value_component : measure_value
+}
+
+enum compound_item_definition {
+LIST [1:?] OF representation_item
+SET [1:?] OF representation_item
+}
+
+' Связи между классами
+
+binary_representation_item --|> representation_item
+bytes_representation_item --|> binary_representation_item
+compound_representation_item --|> representation_item
+mapped_item --|> representation_item
+value_representation_item --|> representation_item
+
+representation_item_relationship --> representation_item : relating_representation_item
+representation_item_relationship --> representation_item : related_representation_item
+
+mapped_item --> representation_map : mapping_source
+mapped_item --> representation_item : mapping_target
+
+representation_map --> representation_item : mapping_origin
+
+compound_representation_item --> compound_item_definition : item_element
+
+representation_map --> representation : mapped_representation
+
+@enduml
