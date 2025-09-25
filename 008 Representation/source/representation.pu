@@ -1,0 +1,55 @@
+@startuml
+
+class representation {
+  id : identifier
+  name : label
+  description : text
+}
+
+abstract class representation_context {
+  context_identifier : identifier
+  context_type : text
+}
+
+
+
+class definitional_representation {
+}
+
+class global_uncertainty_assigned_context {
+  uncertainty : SET [1:?] OF uncertainty_measure_with_unit
+}
+
+
+class parametric_representation_context {
+}
+
+
+class uncertainty_assigned_representation {
+  uncertainty : SET [1:?] OF uncertainty_measure_with_unit
+}
+
+abstract class uncertainty_measure_with_unit {
+  name : label
+  description : OPTIONAL text
+}
+
+' Связи между классами
+
+definitional_representation --|> representation
+global_uncertainty_assigned_context --|> representation_context
+parametric_representation_context --|> representation_context
+uncertainty_assigned_representation --|> representation
+
+
+
+representation --> representation_item : items
+representation --> representation_context : context_of_items
+
+global_uncertainty_assigned_context --> uncertainty_measure_with_unit : uncertainty
+uncertainty_assigned_representation --> uncertainty_measure_with_unit : uncertainty
+
+
+
+
+@enduml

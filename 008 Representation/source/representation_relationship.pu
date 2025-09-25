@@ -1,0 +1,49 @@
+abstract class representation_relationship {
+  name : label
+  description : OPTIONAL text
+  rep_1 : representation_or_representation_reference
+  rep_2 : representation_or_representation_reference
+}
+
+class definitional_representation_relationship {
+}
+
+class definitional_representation_relationship_with_same_context {
+}
+
+class functionally_defined_transformation {
+  name : label
+  description : OPTIONAL text
+}
+
+class item_defined_transformation {
+  name : label
+  description : OPTIONAL text
+  transform_item_1 : representation_item
+  transform_item_2 : representation_item
+}
+
+class representation_relationship_with_transformation {
+  
+}
+
+enum transformation {
+  item_defined_transformation
+  functionally_defined_transformation
+}
+
+' Связи между классами
+
+definitional_representation_relationship --|> representation_relationship
+definitional_representation_relationship_with_same_context --|> definitional_representation_relationship
+representation_relationship_with_transformation --|> representation_relationship
+
+
+item_defined_transformation --> representation_item : transform_item_1
+item_defined_transformation --> representation_item : transform_item_2
+
+
+representation_relationship --> representation : rep_1
+representation_relationship --> representation : rep_2
+
+representation_relationship_with_transformation --> transformation : transformation_operator
