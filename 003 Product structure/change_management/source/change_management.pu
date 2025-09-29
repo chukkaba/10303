@@ -1,0 +1,69 @@
+@startuml
+
+class Change {
+  id : OPTIONAL identifier
+  name : label
+  description : OPTIONAL text
+  
+}
+
+abstract class Change_element {
+  attribute_name : OPTIONAL STRING
+  change_location_in_aggregate_attribute : OPTIONAL LIST [1:?] OF INTEGER -- maps to property_definition,...,integer_representation_item
+
+}
+
+class Change_element_sequence {
+  description : OPTIONAL text
+
+}
+
+class Add_element {
+  
+}
+
+class Modify_element {
+  
+}
+
+class Modify_single_element {
+
+}
+
+class Delete_element {
+
+}
+
+class Frozen_assignment {
+  
+}
+
+enum Change_management_object {
+    
+}
+
+' Связи между классами
+
+
+Change_element <|-- Add_element
+Change_element <|-- Modify_element
+Change_element <|-- Modify_single_element
+Change_element <|-- Delete_element
+
+Change  --> product_version_relationship : described_change
+
+Change_element  --> Change : change_set
+Change_element_sequence --> Change_element : previous
+Change_element_sequence --> Change_element : next
+
+Add_element --> Change_set : change_set
+Modify_element --> Change_set : change_set
+Modify_single_element --> Change_set : change_set
+Delete_element --> Change_set : change_set
+Delete_element --> Change_management_object : previous_design_object SET [1:?]
+Frozen_assignment --> Change_management_object : frozen_item SET [1:?]
+Modify_single_element --> Change_management_object : current_design_object
+Modify_single_element --> Change_management_object : previous_design_object
+Modify_element --> Change_management_object : current_design_object SET [1:?]
+Add_element --> Change_management_object : current_design_object SET [1:?]
+@enduml

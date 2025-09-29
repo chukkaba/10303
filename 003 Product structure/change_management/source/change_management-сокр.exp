@@ -1,0 +1,51 @@
+
+
+ENTITY Change;
+  id : OPTIONAL identifier;
+  name : label;
+  description : OPTIONAL text;
+  described_change: OPTIONAL change_relationship_select; -- maps to group_assignment
+END_ENTITY; 
+
+ENTITY Change_element
+  ABSTRACT SUPERTYPE OF (ONEOF
+	(Modify_element,
+	 Modify_single_element,
+     Delete_element,
+	 Add_element));
+  attribute_name : OPTIONAL STRING; -- maps to group.name
+  change_location_in_aggregate_attribute : OPTIONAL LIST [1:?] OF INTEGER; -- maps to property_definition,...,integer_representation_item
+  change_set : Change;  -- map to group_relationship
+END_ENTITY;
+
+ENTITY Change_element_sequence;
+  description : OPTIONAL text;
+  previous : Change_element;
+  next : Change_element;
+END_ENTITY;  
+
+ENTITY Add_element
+  SUBTYPE OF (Change_element);
+  current_design_object : SET [1:?] OF change_management_object; -- maps to group_assignment
+END_ENTITY;
+
+ENTITY Modify_element
+  SUBTYPE OF (Change_element);
+  current_design_object  : SET [1:?] OF change_management_object;
+END_ENTITY;
+
+ENTITY Modify_single_element
+  SUBTYPE OF (Change_element);
+  current_design_object  : change_management_object;
+  previous_design_object : change_management_object;
+END_ENTITY;
+
+ENTITY Delete_element
+  SUBTYPE OF (Change_element);
+  previous_design_object : SET [1:?] OF change_management_object;
+END_ENTITY;
+
+ENTITY Frozen_assignment;
+  frozen_item : SET[1:?] OF change_management_object;
+END_ENTITY;
+
