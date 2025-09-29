@@ -1,0 +1,41 @@
+ 
+ENTITY generic_property_relationship;
+  name              : label;
+  description       : text;
+  relating 			: generic_property_definition_select;
+  related  			: generic_property_definition_select;
+  relation_type : STRING;
+END_ENTITY;
+
+ENTITY material_designation; 
+  name       		: label;
+  definitions 	: SET [1:?] OF characterized_definition;
+END_ENTITY;
+
+ENTITY material_designation_characterization;
+  name       		: label;
+  description 	: text;
+  designation 	: material_designation;
+  property    	: characterized_material_property;
+END_ENTITY;
+
+ENTITY material_property
+SUBTYPE OF (property_definition);
+END_ENTITY;
+
+ENTITY product_material_composition_relationship
+SUBTYPE OF (product_definition_relationship);
+  class        	       : label;
+  constituent_amount  	: SET [1:?] OF characterized_product_composition_value;
+  composition_basis    : label;
+  determination_method : text;
+END_ENTITY;
+
+ENTITY property_definition_relationship;
+  name                       	: label;
+  description                 	: text;
+  relating_property_definition 	: property_definition;
+  related_property_definition  	: property_definition;
+END_ENTITY;
+
+END_SCHEMA;    -- material_property_definition_schema

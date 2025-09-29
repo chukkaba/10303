@@ -1,0 +1,25 @@
+
+ENTITY data_environment;
+  name       		: label;
+  description 	: text;
+  elements    	: SET [1:?] OF characterized_property_representation;
+END_ENTITY;
+
+ENTITY data_environment_relationship;
+  name                    		: label;
+  description              	: text;
+  relating_data_environment 	: data_environment;
+  related_data_environment  	: data_environment;
+END_ENTITY;
+
+ENTITY material_property_representation
+  SUBTYPE OF (property_definition_representation);
+  dependent_environment : data_environment;
+END_ENTITY;
+
+ENTITY material_dimensional_characteristic_representation
+  SUBTYPE OF (dimensional_characteristic_representation);
+  dependent_environment : data_environment;
+END_ENTITY;
+
+

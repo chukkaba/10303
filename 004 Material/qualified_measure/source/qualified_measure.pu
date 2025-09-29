@@ -1,0 +1,113 @@
+@startuml
+
+class representation_item {
+  
+}
+
+class descriptive_representation_item {
+  description : text
+}
+
+class expanded_uncertainty {
+  coverage_factor : REAL
+}
+
+class maths_value_qualification {
+  name : label
+  description : text
+}
+
+class maths_value_representation_item {
+  value_component : maths_value
+  unit_component : unit
+}
+
+class measure_qualification {
+  name : label
+  description : text
+}
+
+class measure_representation_item {
+
+}
+
+class maths_value_precision_qualifier {
+
+}
+
+class precision_qualifier {
+  precision_value : INTEGER
+}
+
+class qualified_representation_item {
+
+}
+
+class qualitative_uncertainty {
+  uncertainty_value : text
+}
+
+class standard_uncertainty {
+  uncertainty_value : REAL
+}
+
+class type_qualifier {
+  name : label
+}
+
+class uncertainty_qualifier {
+  measure_name : label
+  description : text
+}
+
+class value_format_type_qualifier {
+ 
+}
+
+class value_format_type {
+    id : identifier
+}
+
+enum value_qualifier {
+    precision_qualifier
+    value_format_type_qualifier
+    type_qualifier
+    uncertainty_qualifier
+    maths_value_precision_qualifier
+}
+
+' Связи между классами
+
+descriptive_representation_item --|> representation_item
+
+expanded_uncertainty --|> standard_uncertainty
+
+maths_value_qualification --> maths_value_with_unit : qualified_maths_value
+maths_value_qualification --> value_qualifier : qualifiers SET [1:?]
+
+maths_value_representation_item --|> representation_item
+maths_value_representation_item --> maths_value_with_unit
+
+measure_qualification --> measure_with_unit : qualified_measure
+measure_qualification --> value_qualifier : qualifiers SET [1:?]
+
+measure_representation_item --|> representation_item
+measure_representation_item --> measure_with_unit : value_component 
+
+qualified_representation_item --|> representation_item
+qualified_representation_item --> value_qualifier : qualifiers SET [1:?]
+
+qualitative_uncertainty --|> uncertainty_qualifier
+
+
+standard_uncertainty --|> uncertainty_qualifier
+
+
+value_format_type_qualifier --> value_format_type : format_type
+
+maths_value_precision_qualifier  --> maths_value : precision_value
+
+maths_value_with_unit --> maths_value : value_component
+maths_value_with_unit --> unit : unit_component
+
+@enduml

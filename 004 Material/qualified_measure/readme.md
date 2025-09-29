@@ -1,3 +1,43 @@
+
+Схема qualified_measure_schema из ISO 10303-45 предназначена для описания количественных характеристик с дополнительными атрибутами, позволяющими уточнить тип, точность, степень неопределенности и доверенности измеряемых или вычисляемых величин.
+
+Основная задача схемы — дополнить представление физических величин атрибутами, которые позволяют явно указывать тип значения (измеренное, номинальное, максимальное и т.д.), количество значащих цифр, диапазон неопределенности и способ квалификации. Это критично для корректного обмена инженерными данными, включая спецификации, результаты испытаний и расчетные параметры материалов в PLM, CAD и других информационных системах.
+
+![](source/qualified_measure.png)
+
+
+Среди ключевых объектов схемы выделяются:
+
+qualified_representation_item — объект с набором квалификаторов, уточняющих характеристику значения.
+
+measure_qualification — обеспечивает связь между конкретным измерением (measure_with_unit) и набором квалификаторов; позволяет дополнять физическую величину деталями о типе, точности и неопределенности.
+
+value_qualifier — элемент квалификации значения, тип — SELECT из трех вариантов: precision_qualifier, type_qualifier, uncertainty_qualifier.
+
+type_qualifier — указывает тип значения (например, "measured", "nominal", "maximum", "design allowable" и другие).
+
+precision_qualifier — задаёт количество значащих цифр при представлении значения.
+
+uncertainty_qualifier — характеризует область неопределенности (например, стандартная, качественная, интервальная) и способы её расчета.
+
+Связи между сущностями
+qualified_representation_item содержит набор квалификаторов, которые в свою очередь могут быть instances типа precision_qualifier (не более одной), type_qualifier и uncertainty_qualifier.
+
+measure_qualification связывает объект measure_with_unit с одним или несколькими квалификаторами value_qualifier, описывая дополнительно точность, тип значений и область неопределенности.
+
+uncertainty_qualifier может быть связан с качественной или стандартной неопределенностью, уточняя свойства измерения и область допустимых значений.
+
+Примеры применения
+Описание характеристик материала в форме: предел прочности (measured), представленное с точностью до 2 знаков, с интервальной неопределённостью, указывающей диапазон достоверности в 95%.
+
+Представление расчетных параметров в симуляции: номинальное расчетное давление с указанием типа ("calculated") и стандартной неопределенности по ISO, что важно для сравнения и сертификации.
+
+Передача спецификаций в машиностроении: масса компонента описана квалификаторами "measured", "maximum" и точностью (число знаков), что помогает унифицировать сравнение запчастей между производителями.
+
+Все эти механизмы обеспечивают единообразное, формализованное описание количественных характеристик, необходимых для инженерного обмена, расчетного анализа и документирования производственных данных.
+
+
+
 qualified_measure_schema переопределяет ресурсные конструкции из measure_schema и maths_function_schema, чтобы можно было квалифицировать величины, т.е. дополнительно охарактеризовать их тип, точность, неопределенность и надежность. qualified_measure_schema предоставляет определенный синтаксис для указания разрешенных форматов для числовых значений, которые могут быть связаны со свойством.
 
 Физическая величина может иметь несколько аспектов, отличных от ее значения и единиц измерения. Значение может быть неопределенным из-за вариативности процедуры измерения, что приводит к недостаточной воспроизводимости. Например, значение элемента данных может быть помечено как одобренное для проектирования или иным образом охарактеризовано в отношении его типа и статуса. Эта схема поддерживает добавление этих понятий.
@@ -15,20 +55,3 @@ qualified_measure_schema переопределяет ресурсные кон�
 
 Хотя комбинированная стандартная неопределенность используется для выражения неопределенности многих результатов измерений, часто требуется мера неопределенности, определяющая интервал относительно результата измерения, в пределах которого можно с уверенностью утверждать, что значение измеряемой величины находится в пределах нормы. Мера неопределенности, предназначенная для удовлетворения этого требования, называется расширенной неопределенностью U и получается путем умножения uc(y) на коэффициент охвата k. Таким образом, U = kuc(y) и можно с уверенностью утверждать, что: y – U <=Y <= y + U, что обычно записывается как Y = y ± U. Как правило, значение k выбирается на основе желаемого уровня достоверности, который должен быть связан с интервалом, определяемым U = kuc . Обычно значение k находится в диапазоне от 2 до 3. Когда к результатам применяется нормальное распределение и uc имеет незначительную неопределенность, то k = 2 определяет интервал с уровнем достоверности приблизительно 95 процентов, а k = 3 определяет интервал с уровнем достоверности более 99 процентов.
 
-====================================================================================================
-
-The qualified_measure_schema specializes the resource constructs from the measure_schema and the maths_function_schema to allow quantities to be qualified, i.e. further characterized as to their type, precision, uncertainty and reliability. The qualified_measure_schema provides a particular syntax to specify the allowed formats for the numeric values that may be associated with a property.
-
-A physical quantity may have several aspects other than its value and units. The value may be uncertain because of the variability in the measurement procedure, leading to a lack of reproducibility. The value of a datum may be labelled as being approved for design, for example, or otherwise characterized as to its type and status. This schema supports the addition of these concepts.
-
-The concept of uncertainty on a measured value used in this part of ISO 10303 is taken from Clause 2.2 of ISO/IEC Guide 98:1995. In general, the result of a measurement, y, is only an approximation or estimate of the value of the specific quantity that is the subject of the measurement (the measurand), Y. The uncertainty of the result of a measurement reflects the lack of exact knowledge of the measurand and thus the result is complete only when accompanied by a quantitative statement of its uncertainty. The uncertainty generally consists of several components which may be grouped into two categories according to the method used to estimate the numerical values of the components:
-
-those which are evaluated by statistical methods;
-those which are evaluated by other means.
-Each component of uncertainty that contributes to the uncertainty of a measurement result is represented by an estimated standard deviation, termed standard uncertainty, ui , and equal to the positive square root of the estimated variance. The procedures for evaluating the standard uncertainty for both of the above categories are described in Clause 4 of ISO/IEC Guide 98:1995.
-
-The standard uncertainty of the results of a measurement, when that result is obtained from the values of a number of other quantities, is termed the combined standard uncertainty, uc . It is the estimated standard deviation associated with the result and is equal to the positive square root of the combined variance, obtained by summing all variance and covariance components, however evaluated. The procedure for combining the variance and covariance components is described in Clause 5 of ISO/IEC Guide 98:1995. This schema provides the means for representing either the standard uncertainty or the combined standard uncertainty.
-
-NOTE    The number of measurements that have been used to derive the uncertainty of a measured value can be specified by use of the data_environment associated with the value (See Clause 5).
-
-Although the combined standard uncertainty is used to express the uncertainty of many measurement results, what is often required is a measure of uncertainty that defines an interval about the measurement result within which the value of the measurand can be confidently asserted to lie. The measure of uncertainty intended to meet this requirement is termed the expanded uncertainty, U, and is obtained by multiplying uc(y) by a coverage factor, k. Thus U = kuc(y) and it can be confidently asserted that: y – U <=Y <= y + U, which is usually written as Y = y ± U. In general, the value of k is chosen on the basis of the desired level of confidence to be associated with the interval defined by U = kuc . Typically, k is in the range of 2 to 3. When the normal distribution applies to the results and uc has a negligible uncertainty, then k = 2 defines an interval having a level of confidence of approximately 95 percent and k = 3 defines an interval having a level of confidence greater that 99 percent.

@@ -1,0 +1,46 @@
+@startuml
+
+class data_environment {
+  name : label
+  description : text
+}
+
+class data_environment_relationship {
+  name : label
+  description : text
+  
+}
+
+abstract class property_definition_representation {
+}
+
+class material_property_representation {
+ 
+}
+
+abstract class dimensional_characteristic_representation {
+}
+
+class material_dimensional_characteristic_representation {
+  
+}
+
+enum characterized_property_representation {
+	dimensional_characteristic_representation
+	property_definition_representation
+}
+
+' Связи между классами
+
+data_environment_relationship --> data_environment : relating_data_environment
+data_environment_relationship --> data_environment : related_data_environment
+
+material_property_representation --|> property_definition_representation
+material_property_representation --> data_environment : dependent_environment
+
+material_dimensional_characteristic_representation --|> dimensional_characteristic_representation
+material_dimensional_characteristic_representation --> data_environment : dependent_environment
+
+data_environment --> characterized_property_representation : elements SET [1:?]
+
+@enduml
