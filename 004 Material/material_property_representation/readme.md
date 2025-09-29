@@ -1,16 +1,55 @@
-Назначение схемы material_property_representation_schema -  представление технических свойств и условий, при которых эти представления свойств действительны.
+Схема material_property_representation на языке Express приведена в ГОСТ Р ИСО 10303-45-2022. Ниже приводится описание применения данной схемы для идентификаций материала для изделий машиностроения и их СЧ, разрабатываемых в соответствии со стандартами СПЖЦ и ЕСКД.
+
+Схема material_property_representation_schema из ISO 10303-45 предназначена для структурированного представления свойств материалов(например, механических, химических, физических) и условий их действия (обеспечения, измерения, например, температура испытаний, влажность, способ получения образца) в контексте автоматизации производства и обмена инженерными данными. Эта схема помогает формализовать данные о технических характеристиках материалов, условиях проведения испытаний и способах их фиксации, что важно для поддержки цифровых процессов во всем жизненном цикле изделия.
+
+
+![](source/material_property_representation.png)
+
+Среди ключевых объектов схемы выделяются:
+
+**material_property_representation** — представление свойства материала. Это подтип объекта property_definition_representation, описанного в ГОСТ Р 77.4ХХ, который позволяет к представлению свойства добавить ссылку на условия (data_environment), при которых данное представлление актуально.
+
+**data_environment** — набор условий (атрибутов), которые однозначно определяют валидность представления свойства; может содержать описание среды, текстовые пояснения, перечень элементарных условий.
+
+Каждое условие в наборе описывается с использованием объекта property_definition_representation или объекта dimensional_charecteristic_representation
+
+**data_environment_relationship** — связь между двумя объектами data_environment, используется для установки логических или содержательных связей между разными наборами условий.
+
+
+
+Связи между сущностями
+material_property_representation зависит от объекта data_environment — описание свойства материала корректно только при выполнении определённых условий (например, для стали прочность будет зависеть от температуры испытания).
+
+data_environment_relationship позволяет устраивать отношения между условиями: например, «при температуре 20°C и влажности 50%» — это отдельный data_environment, который может быть связан с другим environment для иных условий эксплуатации.
+
+Через наследование и ссылки на внешние схемы, объекты связываются с более широкой структурой STEP: свойство материала — с продуктом, условия — с методами испытаний, единицы измерения — с qualified_measure_schema.
+
+Примеры применения
+В PLM-системе для цифрового двойника изделия схема используется для хранения сведений о сертификационных испытаниях материалов, с фиксацией условий и методов, при которых получены значения прочности, вязкости или плотности.
+
+В машиностроении: описание свойств сплава (например, предел текучести при +25°C) для передачи спецификаций между заводом-изготовителем и потребителем.
+
+В строительстве: аттестация материалов при различных климатических режимах, при необходимости — с отсылкой к лабораторным протоколам.
+
+Эти механизмы обеспечивают точность, интероперабельность и прослеживаемость инженерных данных при использовании их для анализа, расчетов и сертификации изделий.
+
+
 
 Основные понятия и допущения:
 
 - возможно множественное представление объекта, включая использование числовых значений, параметрических или фундаментальных уравнений, графических представлений и нечисловых значений;
+
 ПРИМЕЧАНИЕ. Различие между понятием и представлением понятия описано в стандарте ISO 10303-43
 
 - значение свойства может быть присвоено или измерено;
+- 
 - если значение измеряется, то полученное значение будет зависеть от метода измерения и условий, используемых при применении метода;
+- 
 - если значение присвоено, могут быть указаны условия, при которых это присвоение является действительным;
+- 
 - в случае присвоения или измерения условия, при которых значение является действительным, выражаются в виде набора количественных и качественных данных, которые формируют среду данных.
 
-**НАПРИМЕР**, условия окружающей среды для измерения могут быть выражены как "воздух в помещении" (качественное состояние) или воздух при количественных условиях, указанных как 20 градусов Цельсия и давление в 1 атмосферу.
+**НАПРИМЕР**, условия окружающей среды для измерения могут быть выражены как "воздух в помещении" (качественное состояние) или воздух 20 градусов Цельсия и давление в 1 атмосферу.
 
 Условия метода измерения могут поддерживаться постоянными на протяжении всего измерения. В качестве альтернативы, некоторые условия могут изменяться независимо от других условий для получения набора связанных свойств.
 
@@ -18,24 +57,3 @@
 
 **НАПРИМЕР**, цвет, поддающийся количественному выражению, в основном описывается качественно такими словами, как "красный", "эгейский синий", "серый металлик" и т.д.
 
-===========================================================================================================
-
-
-The subjects of the material_property_representation_schema are the representations of engineering properties and of the conditions under which these property representations are valid.
-
-The following are the fundamental concepts and assumptions related to the representation of engineering properties:
-
-multiple representations of a property are possible including the use of numeric values, parametric or fundamental equations, graphical representations and non-numeric values;
-NOTE    The distinction between a concept and the representation of a concept is described in ISO 10303-43
-
-the value of a property may be assigned or measured;
-if the value is measured, the resulting value will depend on the method of measurement and on the conditions used in applying the method;
-if the value is assigned, the conditions under which that assignment is valid may be specified;
-in the case of either assignment or measurement, the conditions under which the value is valid are expressed as a set of quantitative and qualitative data which form the data environment.
-EXAMPLE    The ambient conditions for a measurement may be expressed as 'room air' (a qualitative condition) or air at the quantitative conditions specified as 20 degrees Celsius and 1 atmosphere pressure.
-
-The conditions of the measurement method may be maintained as constant throughout the measurement. Alternatively, some conditions may be varied independently of other conditions to provide a set of related properties.
-
-Not all values of properties need to be expressed quantitatively, i.e. by numerical values. Values may also be expressed qualitatively, i.e. by a description.
-
-EXAMPLE    Colour, through expressible quantitatively, is mostly described qualitatively by words such as 'red', 'Aegean blue', 'metallic grey', etc.

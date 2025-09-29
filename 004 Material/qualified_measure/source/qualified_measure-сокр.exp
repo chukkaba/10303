@@ -1,0 +1,77 @@
+ENTITY descriptive_representation_item
+  SUBTYPE OF (representation_item);
+  description : text;
+END_ENTITY;
+
+ENTITY expanded_uncertainty
+  SUBTYPE OF (standard_uncertainty);
+  coverage_factor : REAL;
+END_ENTITY;
+
+ENTITY maths_value_qualification;
+  name 			: label;
+  description 		: text;
+  qualified_maths_value : maths_value_with_unit;
+  qualifiers 		: SET [1:?] OF value_qualifier;
+END_ENTITY;
+
+ENTITY maths_value_representation_item
+  SUBTYPE OF (representation_item, maths_value_with_unit);
+END_ENTITY;
+
+ENTITY maths_value_with_unit;
+  value_component 	: maths_value;
+  unit_component 		: unit;
+END_ENTITY;
+
+ENTITY measure_qualification;
+  name 			: label;
+  description 		: text;
+  qualified_measure 	: measure_with_unit;
+  qualifiers 		: SET [1:?] OF value_qualifier;
+END_ENTITY;
+
+ENTITY measure_representation_item
+  SUBTYPE OF (representation_item, measure_with_unit);
+END_ENTITY;
+
+ENTITY maths_value_precision_qualifier;
+  precision_value : maths_value;
+END_ENTITY;
+
+ENTITY precision_qualifier;
+  precision_value : INTEGER;
+END_ENTITY;
+
+ENTITY qualified_representation_item
+  SUBTYPE OF (representation_item);
+  qualifiers 	: SET [1:?] OF value_qualifier;
+END_ENTITY;
+
+ENTITY qualitative_uncertainty
+  SUBTYPE OF (uncertainty_qualifier);
+  uncertainty_value : text;
+END_ENTITY;
+
+ENTITY standard_uncertainty
+  SUPERTYPE OF (expanded_uncertainty)
+  SUBTYPE OF (uncertainty_qualifier);
+  uncertainty_value : REAL;
+END_ENTITY;
+
+ENTITY type_qualifier;
+  name : label;
+END_ENTITY;
+
+ENTITY uncertainty_qualifier
+ SUPERTYPE OF (ONEOF (standard_uncertainty,
+                     qualitative_uncertainty));
+  measure_name : label;
+  description  : text;
+END_ENTITY;
+
+ENTITY value_format_type_qualifier;
+  format_type : value_format_type;
+END_ENTITY;
+
+

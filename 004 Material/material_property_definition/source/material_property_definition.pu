@@ -1,0 +1,58 @@
+@startuml
+
+class generic_property_relationship {
+  name : label
+  description : text
+  relation_type : STRING
+}
+
+class material_designation {
+  name : label
+}
+
+class material_designation_characterization {
+  name : label
+  description : text
+}
+
+abstract class property_definition {
+}
+
+class material_property {
+}
+
+class product_material_composition_relationship {
+  class : label
+  composition_basis : label
+  determination_method : text
+}
+
+class property_definition_relationship {
+  name : label
+  description : text
+}
+
+enum characterized_material_property {
+  material_property_representation
+  product_material_composition_relationship
+}
+
+' Связи между классами
+
+generic_property_relationship --> property_definition : relating
+generic_property_relationship --> property_definition : related
+
+material_designation_characterization --> material_designation : designation
+material_designation_characterization --> characterized_material_property : property
+product_material_composition_relationship --> measure_with_unit : constituent_amount SET [1:?]
+
+material_designation --> characterized_definition : definitions SET [1:?]
+
+material_property --|> property_definition
+
+product_material_composition_relationship --|> product_definition_relationship
+
+property_definition_relationship --> property_definition : relating_property_definition
+property_definition_relationship --> property_definition : related_property_definition
+
+@enduml
