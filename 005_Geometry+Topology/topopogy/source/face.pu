@@ -1,0 +1,61 @@
+@startuml
+
+'class connected_face_set {
+  
+'}
+
+class face {
+  
+}
+
+class face_bound {
+  orientation : BOOLEAN
+}
+
+'class face_outer_bound {
+  
+'}
+
+class face_surface {
+    same_sense : BOOLEAN
+}
+
+package geometry_schema {
+  class surface 
+}
+
+'class oriented_face {
+  'orientation : BOOLEAN
+'}
+
+'class oriented_closed_shell {
+    'orientation : BOOLEAN
+'}
+
+
+'face <|-- oriented_face
+topological_representation_item <|-- face
+face <|-- face_surface
+face_bound  <|-- face_outer_bound
+
+topological_representation_item <|-- face_bound
+
+face_surface --> surface : face_geometry
+
+
+face -right-> face_bound : bounds SET[1:?]
+
+'face_bound <|-- topological_representation_item
+
+face_bound --> "loop" : bound
+
+'face_surface <|-- geometric_representation_item
+
+'face <-- oriented_face : face_element
+
+'connected_face_set --> face : cfs_faces SET [1:?]
+
+'open_shell --|> connected_face_set
+'closed_shell --|> connected_face_set
+
+'closed_shell <|-- oriented_closed_shell

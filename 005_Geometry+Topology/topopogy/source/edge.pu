@@ -1,0 +1,40 @@
+
+class edge {
+}
+
+class edge_curve {
+  same_sense : BOOLEAN
+}
+
+package geometry_schema {
+  class curve
+}
+
+'class oriented_edge {
+
+' orientation : BOOLEAN
+'}
+
+
+'connected_edge_set <|-- topological_representation_item
+'connected_edge_set --> edge : ces_edges SET [1:?]
+
+
+
+'seam_edge --|> oriented_edge
+'seam_edge --> pcurve : pcurve_reference
+
+topological_representation_item <|-- edge
+
+edge <|-- edge_curve
+'edge <|-- oriented_edge
+
+edge -right-> vertex : edge_start
+edge -right-> vertex : edge_end
+
+edge_curve --> curve : edge_geometry
+
+'oriented_edge --> vertex : edge_start
+'oriented_edge --> vertex : edge_end
+
+'oriented_edge --> edge : edge_element

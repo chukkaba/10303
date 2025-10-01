@@ -1,0 +1,152 @@
+
+ENTITY closed_shell
+  SUBTYPE OF (connected_face_set);
+END_ENTITY;
+
+ENTITY connected_edge_set
+  SUBTYPE OF (topological_representation_item);
+  ces_edges : SET [1:?] OF edge;
+
+END_ENTITY;
+
+ENTITY connected_face_set
+  SUPERTYPE OF (ONEOF (closed_shell, open_shell))
+  SUBTYPE OF (topological_representation_item);
+  cfs_faces : SET [1:?] OF face;
+
+END_ENTITY;
+
+ENTITY edge
+  SUPERTYPE OF(ONEOF(edge_curve,
+                     oriented_edge,
+		      subedge))
+  SUBTYPE OF (topological_representation_item);
+  edge_start : vertex;
+  edge_end   : vertex;
+
+
+END_ENTITY;
+
+ENTITY edge_curve
+  SUBTYPE OF(edge,geometric_representation_item);
+  edge_geometry : curve;
+  same_sense    : BOOLEAN;
+END_ENTITY;
+
+ENTITY edge_loop
+  SUBTYPE OF (loop,path);
+
+END_ENTITY;
+
+ENTITY face
+  SUPERTYPE OF(ONEOF(face_surface,
+		      oriented_face,
+                     subface))
+  SUBTYPE OF (topological_representation_item);
+  bounds : SET[1:?] OF face_bound;
+
+END_ENTITY;
+
+ENTITY face_bound
+  SUBTYPE OF(topological_representation_item);
+  bound       :  loop;
+  orientation :  BOOLEAN;
+END_ENTITY;
+
+ENTITY face_outer_bound
+  SUBTYPE OF (face_bound);
+END_ENTITY;
+
+ENTITY face_surface
+  SUBTYPE OF(face,geometric_representation_item);
+  face_geometry :  surface;
+  same_sense    :  BOOLEAN;
+
+END_ENTITY;
+
+
+ENTITY loop
+  SUPERTYPE OF (ONEOF(vertex_loop, edge_loop, poly_loop))
+  SUBTYPE OF (topological_representation_item);
+
+END_ENTITY;
+
+
+ENTITY open_shell
+  SUBTYPE OF (connected_face_set);
+
+END_ENTITY;
+
+ENTITY oriented_closed_shell
+  SUBTYPE OF (closed_shell);
+  closed_shell_element : closed_shell;
+  orientation          : BOOLEAN;
+
+END_ENTITY;
+
+ENTITY oriented_edge
+  SUBTYPE OF (edge);
+  edge_element : edge;
+  orientation  : BOOLEAN;
+
+END_ENTITY;
+
+ENTITY oriented_face
+  SUBTYPE OF (face);
+  face_element : face;
+  orientation  : BOOLEAN;
+
+END_ENTITY;
+
+ENTITY poly_loop
+  SUBTYPE OF (loop,geometric_representation_item);
+  polygon : LIST [3:?] OF UNIQUE cartesian_point;
+
+END_ENTITY;
+
+ENTITY seam_edge
+  SUBTYPE OF (oriented_edge);
+    pcurve_reference : pcurve ;
+
+END_ENTITY;
+
+ENTITY topological_representation_item
+   SUPERTYPE OF (ONEOF(vertex, edge, face_bound, face, vertex_shell,
+                   wire_shell, connected_edge_set, connected_face_set,
+                )
+   SUBTYPE OF (representation_item);
+
+END_ENTITY;
+
+ENTITY vertex
+  SUBTYPE OF (topological_representation_item);
+
+END_ENTITY;
+
+ENTITY vertex_point
+SUBTYPE OF(vertex,geometric_representation_item);
+  vertex_geometry : point;
+
+END_ENTITY;
+
+ENTITY vertex_loop
+  SUBTYPE OF (loop);
+  loop_vertex : vertex;
+
+END_ENTITY;
+
+ENTITY vertex_shell
+  SUBTYPE OF (topological_representation_item);
+  vertex_shell_extent : vertex_loop;
+
+END_ENTITY;
+
+ENTITY wire_shell
+  SUBTYPE OF (topological_representation_item);
+  wire_shell_extent : SET [1:?] OF loop;
+
+END_ENTITY;
+
+
+
+END_SCHEMA; -- end TOPOLOGY schema
