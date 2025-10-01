@@ -1,0 +1,18 @@
+
+@startuml
+
+class edge_loop {
+    ne : INTEGER
+}
+
+"loop" <|-- vertex_loop
+"loop" <|-- edge_loop
+"loop" <|-- poly_loop
+
+topological_representation_item <|-- loop
+
+
+vertex_loop --> vertex : loop_vertex
+
+poly_loop --> cartesian_point : polygon L[3:?]
+

@@ -1,0 +1,18 @@
+@startuml
+
+class vertex_point {
+  
+}
+
+package geometry_schema {
+  class point 
+}
+
+vertex -up-|> topological_representation_item
+vertex_point -up-|> vertex
+
+vertex_point --> point : vertex_geometry
+
+
+
+@enduml

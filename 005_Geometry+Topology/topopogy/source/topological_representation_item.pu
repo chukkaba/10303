@@ -1,0 +1,57 @@
+@startuml
+
+
+class topological_representation_item {
+  permanent_aggregate_id : identifier
+  permanent_id : identifier
+}
+
+class vertex_point {
+  vertex_geometry : point
+}
+
+class edge_curve {
+  edge_geometry : curve
+  same_sense : BOOLEAN
+}
+
+class edge {
+}
+
+class face_surface {
+    same_sense : BOOLEAN
+}
+
+
+topological_representation_item <|-- vertex
+topological_representation_item <|-- edge
+' topological_representation_item <|-- face_bound
+topological_representation_item <|-- face
+' topological_representation_item <|-- vertex_shell
+' topological_representation_item <|-- wire_shell
+' topological_representation_item <|-- connected_edge_set
+' topological_representation_item <|-- connected_face_set
+topological_representation_item <|-- loop
+
+
+"loop" <|-- vertex_loop
+"loop" <|-- edge_loop
+"loop" <|-- poly_loop
+
+vertex_point --|> vertex
+edge_curve --|> edge 
+
+face <|-- face_surface
+
+representation_item <|-- topological_representation_item
+
+edge --> vertex : edge_start
+edge --> vertex : edge_end
+
+poly_loop --> cartesian_point : polygon L[3:?]
+
+vertex_loop --> vertex : loop_vertex
+
+face_surface --> surface : face_geometry
+
+@enduml

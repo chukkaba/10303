@@ -1,0 +1,24 @@
+@startuml
+
+enum shell {
+    wire_shell
+    vertex_shell
+    open_shell
+    closed_shell
+    }
+
+class oriented_closed_shell {
+    orientation : BOOLEAN
+}
+
+
+topological_representation_item <|-- wire_shell
+topological_representation_item <|-- vertex_shell
+
+closed_shell <|-- oriented_closed_shell
+
+wire_shell --> loop : wire_shell_extent S[1:?]
+
+vertex_shell --> vertexloop : vertex_shell_extent
+
+@enduml

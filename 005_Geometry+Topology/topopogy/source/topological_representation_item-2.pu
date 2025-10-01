@@ -1,0 +1,23 @@
+@startuml
+
+
+class topological_representation_item {
+  permanent_aggregate_id : identifier
+  permanent_id : identifier
+}
+
+
+
+topological_representation_item <|-- face_bound
+topological_representation_item <|-- vertex_shell
+topological_representation_item <|-- wire_shell
+topological_representation_item <|-- connected_edge_set
+topological_representation_item <|-- connected_face_set
+
+
+
+representation_item <|-- topological_representation_item
+
+
+
+@enduml
