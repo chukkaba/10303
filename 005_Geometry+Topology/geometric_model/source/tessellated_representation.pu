@@ -1,0 +1,61 @@
+@startuml
+
+
+class  tessellated_shape_representation {
+}
+
+class  tessellated_shape_representation_with_accuracy_parameters {
+  tessellation_accuracy_parameters : SET [1:?] OF tessellation_accuracy_parameter_item
+}
+
+class tessellated_geometric_set {
+}
+
+class tessellated_solid {
+}
+
+class tessellated_shell {
+}
+
+class tessellated_curve_set {
+  line_strips : LIST[1:?] OF LIST[2:?] OF INTEGER
+}
+
+class tessellated_point_set {
+ point_list : LIST[1:?] OF INTEGER
+}
+
+class coordinates_list {
+  npoints : INTEGER
+  position_coords : LIST[1:?] OF LIST[3:3] OF REAL
+}
+
+package topology_schema {
+class connected_face_set
+}
+
+tessellated_item <|-- tessellated_solid
+tessellated_item <|-- tessellated_shell
+tessellated_item <|-- tessellated_curve_set
+tessellated_item <|-- tessellated_geometric_set
+tessellated_item <|-- tessellated_point_set
+tessellated_item <|-- tessellated_structured_item
+tessellated_item <|-- coordinates_list
+
+shape_representation <|-- tessellated_shape_representation
+tessellated_shape_representation <|-- tessellated_shape_representation_with_accuracy_parameters
+
+tessellated_shape_representation --> tessellated_item : items set [1:?]
+
+tessellated_geometric_set --> tessellated_item : children SET[1:?]
+
+tessellated_solid --> tessellated_structured_item : items SET[1:?]
+tessellated_solid ..> manifold_solid_brep : geometric_link 
+
+tessellated_shell --> tessellated_structured_item : items SET[1:?] 
+tessellated_shell ..> connected_face_set : topological_link 
+
+tessellated_curve_set --> coordinates_list : coordinates
+tessellated_point_set --> coordinates_list : coordinates
+
+@enduml
