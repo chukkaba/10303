@@ -1,0 +1,26 @@
+@startuml
+
+class shell_based_wireframe_model 
+
+
+class edge_based_wireframe_model {
+
+}
+
+package topology_schema {
+    class shell
+    class connected_edge_set
+}
+
+enum wireframe_model {
+    edge_based_wireframe_model
+    shell_based_wireframe_model
+}
+
+geometric_representation_item <|-- shell_based_wireframe_model
+geometric_representation_item <|-- edge_based_wireframe_model
+
+shell_based_wireframe_model --> shell : sbwm_boundary SET[1:?]
+edge_based_wireframe_model --> connected_edge_set : ebwm_boundary SET[1:?]
+
+@enduml

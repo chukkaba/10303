@@ -1,0 +1,33 @@
+@startuml
+
+
+class geometric_set {
+}
+
+class geometric_curve_set {
+}
+
+class geometric_set_replica {
+
+}
+
+enum geometric_set_select {
+curve
+point
+surface
+}
+
+package geometry_schema {
+  class cartesian_transformation_operator 
+}
+
+
+geometric_representation_item <|-- geometric_set
+geometric_set <|-- geometric_curve_set
+geometric_set <|-- geometric_set_replica
+
+geometric_set --> geometric_set_select : elements SET[1:?]
+geometric_set_replica --> geometric_set : parent_set
+geometric_set_replica --> cartesian_transformation_operator : transformation
+
+@enduml

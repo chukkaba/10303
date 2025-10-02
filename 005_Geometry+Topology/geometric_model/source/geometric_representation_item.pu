@@ -1,0 +1,11 @@
+@startuml
+
+geometric_representation_item <|-- solid_model
+geometric_representation_item <|-- edge_based_wireframe_model
+geometric_representation_item <|-- shall_based_wireframe_model
+geometric_representation_item <|-- edge_based_surface_model
+geometric_representation_item <|-- shall_based_surface_model
+geometric_representation_item <|-- geometric_set
+geometric_representation_item <|-- tessellated_item
+
+@enduml

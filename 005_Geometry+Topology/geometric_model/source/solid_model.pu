@@ -1,0 +1,38 @@
+@startuml
+
+class solid_model {
+}
+
+class manifold_solid_brep {
+}
+
+class solid_replica {
+}
+
+class brep_with_voids {
+  
+}
+
+package topology_schema {
+  class closed_shell 
+}
+
+package geometry_schema {
+  class cartesian_transformation_operator_3d 
+}
+
+solid_model <|-- manifold_solid_brep
+solid_model <|-- solid_replica
+
+geometric_representation_item <|-- solid_model
+
+manifold_solid_brep <|-- brep_with_voids
+manifold_solid_brep <|-- faceted_brep
+
+
+manifold_solid_brep --> closed_shell : outer
+solid_replica --> solid_model : parent_solid
+solid_replica --> cartesian_transformation_operator_3d : transformation
+brep_with_voids --> oriented_closed_shell : voids SET[1:?]
+
+@enduml

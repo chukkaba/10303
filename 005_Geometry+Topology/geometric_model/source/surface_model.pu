@@ -1,0 +1,29 @@
+@startuml
+
+class shell_based_surface_model {
+}
+
+class face_based_surface_model {
+}
+
+enum surface_model {
+    face_based_surface_model
+    shell_based_surface_model
+}
+
+package topology_schema {
+    class shell
+}
+
+package topology_schema {
+    class connected_face_set
+}
+
+
+geometric_representation_item <|-- shell_based_surface_model
+geometric_representation_item <|-- face_based_surface_model
+
+shell_based_surface_model --> shell : sbsm_boundary SET[1:?]
+face_based_surface_model --> connected_face_set : fbsm_faces SET[1:?]
+
+@enduml
