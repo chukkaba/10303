@@ -1,41 +1,38 @@
 @startuml
-!pragma layout smetana
-skinparam groupInheritance 2
+
 hide empty members
-top to bottom direction
 
-
-
-class measure_value {
+class measure_value #White {
 }
 
-class unit {
+class unit #White {
 }
 
-
-class named_unit{
-   
+class named_unit #White {
 }
 
-class dimensional_exponents {
-    length_exponent : REAL
-    mass_exponent : REAL
-    time_exponent : REAL
-    electric_current_exponent : REAL
-    thermodynamic_temperature_exponent : REAL
-    amount_of_substance_exponent : REAL
-    luminous_intensity_exponent : REAL
+class representation_context #White {   
+}
+
+class dimensional_exponents #White {
+    + length_exponent : REAL
+    + mass_exponent : REAL
+    + time_exponent : REAL
+    + electric_current_exponent : REAL
+    + thermodynamic_temperature_exponent : REAL
+    + amount_of_substance_exponent : REAL
+    + luminous_intensity_exponent : REAL
   }
 
 
 ' Сущности
-class global_unit_assigned_context {
+class global_unit_assigned_context #White {
 }
 
-class measure_with_unit {
+class measure_with_unit #White {
 }
 
-class plane_angle_unit{
+class plane_angle_unit #White {
 }
 
 ' Наследование

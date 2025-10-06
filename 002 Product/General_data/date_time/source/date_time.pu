@@ -1,46 +1,48 @@
 @startuml
 
-class calendar_date {
-  day_component : day_in_month_number
-  month_component : month_in_year_number
+hide empty methods
+
+class calendar_date #White {
+  + day_component : day_in_month_number
+  + month_component : month_in_year_number
 }
 
-class coordinated_universal_time_offset {
-  hour_offset : INTEGER
-  minute_offset : INTEGER?
-  sense : ahead_or_behind
-  actual_minute_offset : INTEGER
+class coordinated_universal_time_offset #White {
+  +hour_offset : INTEGER
+  - minute_offset : INTEGER?
+  +sense : ahead_or_behind
+  +actual_minute_offset : INTEGER
 }
 
-class date {
+class date #White {
   year_component : year_number
 }
 
-class date_and_time {
+class date_and_time #White {
 
 }
 
-class local_time {
-  hour_component : hour_in_day
-  minute_component : minute_in_hour?
-  second_component : second_in_minute?
+class local_time #White {
+  +hour_component : hour_in_day
+  -minute_component : minute_in_hour?
+  -second_component : second_in_minute?
 
 }
 
-class week_of_year_and_day_date {
-  week_component : week_in_year_number
-  day_component : day_in_week_number?
+class week_of_year_and_day_date #White {
+  +week_component : week_in_year_number
+  -day_component : day_in_week_number?
 }
 
-class year_month {
+class year_month #White {
   month_component : month_in_year_number
 }
 
 ' Связи между сущностями
 
-calendar_date --|> date
-week_of_year_and_day_date --|> date
-year_month --|> date
+calendar_date -up-|> date
+week_of_year_and_day_date -up-|> date
+year_month -up-|> date
 
 
 date_and_time --> date : date_component

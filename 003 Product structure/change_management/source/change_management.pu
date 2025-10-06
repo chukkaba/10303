@@ -1,69 +1,83 @@
-@startuml
+@startuml change_management
 
-class Change {
-  id : OPTIONAL identifier
-  name : label
-  description : OPTIONAL text
-  
+hide empty members
+' skinparam nodesep 150
+skinparam linetype ortho
+
+
+class Change #White {
+  - id : OPTIONAL identifier
+  + name : label
+  - description : OPTIONAL text
+  - described_change: OPTIONAL change_relationship_select
 }
 
-abstract class Change_element {
-  attribute_name : OPTIONAL STRING
-  change_location_in_aggregate_attribute : OPTIONAL LIST [1:?] OF INTEGER -- maps to property_definition,...,integer_representation_item
-
-}
-
-class Change_element_sequence {
-  description : OPTIONAL text
-
-}
-
-class Add_element {
-  
-}
-
-class Modify_element {
-  
-}
-
-class Modify_single_element {
+abstract class Change_element #White {
+  - attribute_name : OPTIONAL STRING
+  - change_location_in_aggregate_attribute : OPTIONAL LIST [1:?] OF INTEGER -- maps to property_definition,...,integer_representation_item
 
 }
 
-class Delete_element {
+class Change_element_sequence #White {
+  - description : OPTIONAL text
 
 }
 
-class Frozen_assignment {
-  
+class Add_element #White {
+  + current_design_object : SET [1:?] OF change_management_object
 }
 
-enum Change_management_object {
+class Modify_element #White {
+  + current_design_object  : SET [1:?] OF change_management_object
+}
+
+class Modify_single_element #White {
+
+}
+
+class Delete_element #White {
+  + previous_design_object : SET [1:?] OF change_management_object
+}
+
+class Frozen_assignment #White {
+  + frozen_item : SET[1:?] OF change_management_object
+}
+
+enum Change_management_object #White {
     
 }
 
 ' Связи между классами
+<> diamond
+diamond -up-|> Change_element
 
-
-Change_element <|-- Add_element
-Change_element <|-- Modify_element
-Change_element <|-- Modify_single_element
-Change_element <|-- Delete_element
+diamond <|-- Add_element
+diamond <|-- Modify_element
+diamond <|-- Modify_single_element
+diamond <|-- Delete_element
 
 Change  --> product_version_relationship : described_change
 
 Change_element  --> Change : change_set
-Change_element_sequence --> Change_element : previous
-Change_element_sequence --> Change_element : next
+Change_element_sequence -right-> Change_element : previous
+Change_element_sequence -right-> Change_element : next
 
-Add_element --> Change_set : change_set
-Modify_element --> Change_set : change_set
-Modify_single_element --> Change_set : change_set
-Delete_element --> Change_set : change_set
-Delete_element --> Change_management_object : previous_design_object SET [1:?]
-Frozen_assignment --> Change_management_object : frozen_item SET [1:?]
-Modify_single_element --> Change_management_object : current_design_object
-Modify_single_element --> Change_management_object : previous_design_object
-Modify_element --> Change_management_object : current_design_object SET [1:?]
-Add_element --> Change_management_object : current_design_object SET [1:?]
+() 1
+1 -down-> change_set
+
+Add_element -down-> 1 : change_set
+Modify_element -down-> 1 : change_set
+Modify_single_element -down-> 1 : change_set
+Delete_element -down-> 1 : change_set
+
+() 2
+2 -down-> Change_management_object
+
+Delete_element --> 2 : previous_design_object SET [1:?]
+Frozen_assignment --> 2 : frozen_item SET [1:?]
+Modify_single_element --> 2 : current_design_object
+Modify_single_element --> 2 : previous_design_object
+Modify_element --> 2 : current_design_object SET [1:?]
+Add_element --> 2 : current_design_object SET [1:?]
+
 @enduml
