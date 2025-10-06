@@ -6,18 +6,18 @@ skinparam Linetype ortho
 
 
 class generic_property_relationship #White {
-  name : label
-  description : text
-  relation_type : STRING
+  + name : label
+  + description : text
+  + relation_type : STRING
 }
 
 class material_designation #White {
-  name : label
+  + name : label
 }
 
 class material_designation_characterization #White {
-  name : label
-  description : text
+  + name : label
+  + description : text
 }
 
 abstract class property_definition #White {
@@ -27,14 +27,14 @@ class material_property #White {
 }
 
 class product_material_composition_relationship #White {
-  class : label
-  composition_basis : label
-  determination_method : text
+  + class : label
+  + composition_basis : label
+  + determination_method : text
 }
 
 class property_definition_relationship #White {
-  name : label
-  description : text
+  + name : label
+  + description : text
 }
 
 class product_definition_relationship #White {

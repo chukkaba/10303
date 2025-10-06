@@ -1,44 +1,49 @@
-@startuml
+@startuml material_property_representation
 
-class data_environment {
+!pragma layout smetana
+hide empty members
+'skinparam Linetype ortho
+skinparam Nodesep 170
+
+class data_environment #White {
   name : label
   description : text
 }
 
-class data_environment_relationship {
-  name : label
-  description : text
+class data_environment_relationship #White {
+  + name : label
+  + description : text
   
 }
 
-abstract class property_definition_representation {
+abstract property_definition_representation #White {
 }
 
-class material_property_representation {
+class material_property_representation #White {
  
 }
 
-abstract class dimensional_characteristic_representation {
+abstract dimensional_characteristic_representation #White {
 }
 
-class material_dimensional_characteristic_representation {
+class material_dimensional_characteristic_representation #White {
   
 }
 
-enum characterized_property_representation {
+enum characterized_property_representation #White {
 	dimensional_characteristic_representation
 	property_definition_representation
 }
 
 ' Связи между классами
 
-data_environment_relationship --> data_environment : relating_data_environment
+data_environment_relationship -right-> data_environment : relating_data_environment
 data_environment_relationship --> data_environment : related_data_environment
 
-material_property_representation --|> property_definition_representation
+material_property_representation -up-|> property_definition_representation
 material_property_representation --> data_environment : dependent_environment
 
-material_dimensional_characteristic_representation --|> dimensional_characteristic_representation
+material_dimensional_characteristic_representation -up-|> dimensional_characteristic_representation
 material_dimensional_characteristic_representation --> data_environment : dependent_environment
 
 data_environment --> characterized_property_representation : elements SET [1:?]

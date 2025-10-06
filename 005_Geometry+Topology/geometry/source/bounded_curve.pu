@@ -1,18 +1,20 @@
-@startuml
-skinparam groupInheritance 2
-!pragma layout smetana
+@startuml bounded_curve
+
+'skinparam groupInheritance 2
+'!pragma layout smetana
 hide empty members
+skinparam Linetype ortho
 
-class curve {
+class curve #White {
 }
 
-class bounded_curve {
+class bounded_curve #White  {
 }
 
-class polyline {
+class polyline #White {
 }
 
-class trimmed_curve {
+class trimmed_curve #White {
   +basis_curve : curve
   +trim_1 : SET[1:2] OF trimming_select
   +trim_2 : SET[1:2] OF trimming_select
@@ -20,7 +22,7 @@ class trimmed_curve {
   +master_representation : trimming_preference
 }
 
-class b_spline_curve {
+class b_spline_curve #White {
   +degree : INTEGER
   +control_points_list : LIST[2:?] OF cartesian_point
   +curve_form : b_spline_curve_form
@@ -30,25 +32,31 @@ class b_spline_curve {
   +control_points : ARRAY[0:upper_index_on_control_points] OF cartesian_point
 }
 
-class rational_b_spline_curve {
+class rational_b_spline_curve #White {
   +weights_data : LIST[2:?] OF REAL
   +weights : ARRAY[0:upper_index_on_control_points] OF REAL
 }
 
-class bounded_pcurve {
+class bounded_pcurve #White {
 }
 
-class bounded_surface_curve {
+class bounded_surface_curve #White {
 }
+
+<> diamond
+<> diamond2
 
 ' Наследование
 curve <|-- bounded_curve
 
-bounded_curve <|-- polyline
-bounded_curve <|-- trimmed_curve
-bounded_curve <|-- b_spline_curve
-bounded_curve <|-- bounded_pcurve
-bounded_curve <|-- bounded_surface_curve
+diamond -up-|> bounded_curve
+diamond2 -up- diamond
+
+diamond -left- polyline
+diamond -right- trimmed_curve
+diamond2 -left- b_spline_curve
+diamond2 -right- bounded_pcurve
+diamond2 -- bounded_surface_curve
 
 b_spline_curve <|-- rational_b_spline_curve
 
