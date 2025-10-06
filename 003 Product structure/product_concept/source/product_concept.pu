@@ -1,44 +1,46 @@
-@startuml
+@startuml product_concept
 
-class concept_feature_operator {
-  name : label
-  description : text?
+hide empty members
+
+class concept_feature_operator #White {
+  + name : label
+  - description : text?
 }
 
-class concept_feature_relationship {
-  name : label
-  description : text?
+class concept_feature_relationship #White {
+  + name : label
+  - description : text?
 }
 
-class concept_feature_relationship_with_condition {
+class concept_feature_relationship_with_condition #White {
   
 }
 
-class conditional_concept_feature {
+class conditional_concept_feature #White {
   
 }
 
-class product_concept {
-  id : identifier
-  name : label
-  description : text?
+class product_concept #White {
+  + id : identifier
+  + name : label
+  - description : text?
 
 }
 
-class product_concept_feature {
-  id : identifier
-  name : label
-  description : text?
+class product_concept_feature #White {
+  + id : identifier
+  + name : label
+  - description : text?
 }
 
-class product_concept_feature_association {
-  name : label
-  description : text?
+class product_concept_feature_association #White {
+  + name : label
+  - description : text?
 }
 
-class product_concept_relationship {
-  name : label
-  description : text?
+class product_concept_relationship #White {
+  + name : label
+  - description : text?
   
 }
 
@@ -47,17 +49,17 @@ concept_feature_relationship <|-- concept_feature_relationship_with_condition
 product_concept_feature <|-- conditional_concept_feature
 
 product_concept --> product_concept_context : market_context
-concept_feature_relationship --> product_concept_feature : relating_product_concept_feature
-concept_feature_relationship --> product_concept_feature : related_product_concept_feature
+concept_feature_relationship -right--> product_concept_feature : relating_product_concept_feature
+concept_feature_relationship -right--> product_concept_feature : related_product_concept_feature
 
-concept_feature_relationship_with_condition --> concept_feature_operator : conditional_operator
+concept_feature_relationship_with_condition -left-> concept_feature_operator : conditional_operator
 
-conditional_concept_feature --> concept_feature_relationship_with_condition : condition
+conditional_concept_feature -left-> concept_feature_relationship_with_condition : condition
 
 product_concept_feature_association --> product_concept : concept
 product_concept_feature_association --> product_concept_feature : feature
 
-product_concept_relationship --> product_concept : relating_product_concept
-product_concept_relationship --> product_concept : related_product_concept
+product_concept_relationship --left-> product_concept : relating_product_concept
+product_concept_relationship --left-> product_concept : related_product_concept
 
 @enduml

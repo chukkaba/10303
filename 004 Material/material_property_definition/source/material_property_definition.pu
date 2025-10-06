@@ -1,46 +1,59 @@
-@startuml
+@startuml material_property_definition
 
-class generic_property_relationship {
+'!pragma layout smetana
+hide empty members
+skinparam Linetype ortho
+
+
+class generic_property_relationship #White {
   name : label
   description : text
   relation_type : STRING
 }
 
-class material_designation {
+class material_designation #White {
   name : label
 }
 
-class material_designation_characterization {
+class material_designation_characterization #White {
   name : label
   description : text
 }
 
-abstract class property_definition {
+abstract class property_definition #White {
 }
 
-class material_property {
+class material_property #White {
 }
 
-class product_material_composition_relationship {
+class product_material_composition_relationship #White {
   class : label
   composition_basis : label
   determination_method : text
 }
 
-class property_definition_relationship {
+class property_definition_relationship #White {
   name : label
   description : text
 }
 
-enum characterized_material_property {
+class product_definition_relationship #White {
+
+}
+
+class characterized_definition #White {
+
+}
+
+enum characterized_material_property #White {
   material_property_representation
   product_material_composition_relationship
 }
 
 ' Связи между классами
 
-generic_property_relationship --> property_definition : relating
-generic_property_relationship --> property_definition : related
+generic_property_relationship -up-> property_definition : relating
+generic_property_relationship -up-> property_definition : related
 
 material_designation_characterization --> material_designation : designation
 material_designation_characterization --> characterized_material_property : property
@@ -48,9 +61,9 @@ product_material_composition_relationship --> measure_with_unit : constituent_am
 
 material_designation --> characterized_definition : definitions SET [1:?]
 
-material_property --|> property_definition
+material_property -up-|> property_definition
 
-product_material_composition_relationship --|> product_definition_relationship
+product_material_composition_relationship -up-|> product_definition_relationship
 
 property_definition_relationship --> property_definition : relating_property_definition
 property_definition_relationship --> property_definition : related_property_definition

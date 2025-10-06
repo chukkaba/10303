@@ -1,4 +1,5 @@
-@startuml
+@startuml effectivity
+
 'skinparam groupInheritance 2
 hide empty methods
 'skinparam linetype ortho
