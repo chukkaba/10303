@@ -1,55 +1,56 @@
-@startuml
+@startuml representation
 
-class representation {
-  id : identifier
-  name : label
-  description : text
+hide empty members
+
+class representation #White {
+  + id : identifier
+  + name : label
+  + description : text
 }
 
-abstract class representation_context {
-  context_identifier : identifier
-  context_type : text
+abstract class representation_context #White {
+  + context_identifier : identifier
+  + context_type : text
+}
+
+class representation_item #White {
+
+}
+
+class definitional_representation #White {
+}
+
+class global_uncertainty_assigned_context #White {
+  + uncertainty : SET [1:?] OF uncertainty_measure_with_unit
 }
 
 
-
-class definitional_representation {
-}
-
-class global_uncertainty_assigned_context {
-  uncertainty : SET [1:?] OF uncertainty_measure_with_unit
+class parametric_representation_context #White {
 }
 
 
-class parametric_representation_context {
+class uncertainty_assigned_representation #White {
+  + uncertainty : SET [1:?] OF uncertainty_measure_with_unit
 }
 
-
-class uncertainty_assigned_representation {
-  uncertainty : SET [1:?] OF uncertainty_measure_with_unit
-}
-
-abstract class uncertainty_measure_with_unit {
-  name : label
-  description : OPTIONAL text
+abstract class uncertainty_measure_with_unit #White {
+  + name : label
+  - description : OPTIONAL text
 }
 
 ' Связи между классами
 
-definitional_representation --|> representation
-global_uncertainty_assigned_context --|> representation_context
-parametric_representation_context --|> representation_context
-uncertainty_assigned_representation --|> representation
+definitional_representation -up-|> representation
+global_uncertainty_assigned_context -up-|> representation_context
+parametric_representation_context -up-|> representation_context
+uncertainty_assigned_representation -up-|> representation
 
 
 
 representation --> representation_item : items
 representation --> representation_context : context_of_items
 
-global_uncertainty_assigned_context --> uncertainty_measure_with_unit : uncertainty
+global_uncertainty_assigned_context -right-> uncertainty_measure_with_unit : uncertainty
 uncertainty_assigned_representation --> uncertainty_measure_with_unit : uncertainty
-
-
-
 
 @enduml

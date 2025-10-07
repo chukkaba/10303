@@ -3,7 +3,7 @@
 '!pragma layout smetana
 hide empty methods
 'skinparam Nodesep 150
-'skinparam Linetype ortho
+skinparam Linetype polyline
 
 
 class representation_item #White {

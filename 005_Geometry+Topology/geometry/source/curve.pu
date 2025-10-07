@@ -1,7 +1,5 @@
 @startuml curve
 
-'skinparam groupInheritance 2
-'!pragma layout smetana
 hide empty members
 skinparam Linetype ortho
 
