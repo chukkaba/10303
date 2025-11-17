@@ -1,58 +1,63 @@
 @startuml
 
-class application_context {
-  application : label
-  description : text
-  id : identifier
+hide empty methods
+skinparam linetype ortho
+skinparam nodesep 200
+
+
+class application_context #White {
+  +application : label
+  + description : text
+  + id : identifier
 }
 
-class application_context_element {
+class application_context_element #White {
   name : label
 }
 
-class application_context_relationship {
-  name : label
-  description : text?
+class application_context_relationship #White {
+  + name : label
+  - description : text
 }
 
-class application_protocol_definition {
-  status : label
-  application_interpreted_model_schema_name : label
-  application_protocol_year : year_number
+class application_protocol_definition #White {
+  + status : label
+  + application_interpreted_model_schema_name : label
+  + application_protocol_year : year_number
 }
 
-class library_context {
+class library_context #White {
   library_reference : label
 }
 
-class product_concept_context {
+class product_concept_context #White {
   market_segment_type : label
 }
 
-class product_context {
+class product_context #White {
   discipline_type : label
 }
 
-class product_definition_context {
+class product_definition_context #White {
   life_cycle_stage : label
 }
 
-class language_dependent_product_definition_exchange_context {
+class language_dependent_product_definition_exchange_context #White {
   language : language
 }
 
 ' Связи между сущностями
 
-application_context_element <|-- library_context
+application_context_element <|-right- library_context
 application_context_element <|-- product_concept_context
 application_context_element <|-- product_context
 application_context_element <|-- product_definition_context
 
 product_definition_context <|-- language_dependent_product_definition_exchange_context
 
-application_context_element --> application_context : frame_of_reference
-application_context_relationship --> application_context : relating_context
-application_context_relationship --> application_context : related_context
-application_protocol_definition --> application_context : application
+application_context_element -up-> application_context : frame_of_reference
+application_context_relationship -left-> application_context : relating_context
+application_context_relationship -left-> application_context : related_context
+application_protocol_definition -down-> application_context : application
 
 @enduml

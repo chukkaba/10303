@@ -1,15 +1,16 @@
-@startuml
-skinparam groupInheritance 2
+@startuml bounded_surface
+
+'skinparam groupInheritance 2
 !pragma layout smetana
 hide empty members
 
-class surface {
+class surface #White {
 }
 
-class bounded_surface {
+class bounded_surface #White {
 }
 
-class b_spline_surface {
+class b_spline_surface #White {
   +u_degree : INTEGER
   +v_degree : INTEGER
   +control_points_list : LIST[2:?] OF LIST[2:?] OF cartesian_point
@@ -22,24 +23,24 @@ class b_spline_surface {
   +control_points : ARRAY[0:u_upper] OF ARRAY[0:v_upper] OF cartesian_point
 }
 
-class rational_b_spline_surface {
+class rational_b_spline_surface #White {
   +weights_data : LIST[2:?] OF LIST[2:?] OF REAL
   +weights : ARRAY[0:u_upper] OF ARRAY[0:v_upper] OF REAL
 }
 
-class curve_bounded_surface {
+class curve_bounded_surface #White {
   +basis_surface : surface
   +boundaries : SET[1:?] OF boundary_curve
   +implicit_outer : BOOLEAN
 }
 
-class composite_curve_on_surface {
+class composite_curve_on_surface #White {
 }
 
-class boundary_curve {
+class boundary_curve #White {
 }
 
-class outer_boundary_curve {
+class outer_boundary_curve #White {
 }
 
 ' Наследование

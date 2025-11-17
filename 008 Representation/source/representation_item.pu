@@ -1,64 +1,78 @@
-@startuml
+@startuml representation_item
 
-class binary_representation_item {
-  binary_value : BINARY
+hide empty members
+'!pragma layout smetana
+skinparam Linetype polyline
+
+
+class binary_representation_item #White {
+  +binary_value : BINARY
 }
 
-class bytes_representation_item {
-  no_of_bytes : INTEGER
+class bytes_representation_item #White {
+  +no_of_bytes : INTEGER
 }
 
-class compound_representation_item {
-  item_element : compound_item_definition
+class compound_representation_item #White {
+  +item_element : compound_item_definition
 }
 
-class mapped_item {
-  mapping_source : representation_map
-  mapping_target : representation_item
+class mapped_item #White {
+  +mapping_source : representation_map
+  +mapping_target : representation_item
 }
 
-abstract class representation_item {
-  name : label
+abstract class representation_item #White {
+  +name : label
 }
 
-class representation_item_relationship {
-  name : label
-  description : OPTIONAL text
-  relating_representation_item : representation_item
-  related_representation_item : representation_item
+class representation_item_relationship #White {
+  +name : label
+  - description : OPTIONAL text
+  +relating_representation_item : representation_item
+  +related_representation_item : representation_item
 }
 
-class representation_map {
+class representation_map #White {
 
 }
 
-class value_representation_item {
-  value_component : measure_value
+class value_representation_item #White {
+  +value_component : measure_value
 }
 
-enum compound_item_definition {
+class representation #White {
+
+}
+
+enum compound_item_definition #White {
 LIST [1:?] OF representation_item
 SET [1:?] OF representation_item
 }
 
+<> diamond
+<> diamond2
+
 ' Связи между классами
+diamond -up-|> representation_item
 
-binary_representation_item --|> representation_item
-bytes_representation_item --|> binary_representation_item
-compound_representation_item --|> representation_item
-mapped_item --|> representation_item
-value_representation_item --|> representation_item
+binary_representation_item -- diamond
+compound_representation_item -- diamond
+mapped_item -- diamond
+value_representation_item -- diamond
+bytes_representation_item -up-|> binary_representation_item
 
-representation_item_relationship --> representation_item : relating_representation_item
-representation_item_relationship --> representation_item : related_representation_item
+diamond2 -down-> representation_item
 
-mapped_item --> representation_map : mapping_source
-mapped_item --> representation_item : mapping_target
+representation_item_relationship -left- diamond2 : relating_representation_item
+representation_item_relationship -left- diamond2 : related_representation_item
+mapped_item -- diamond2 : mapping_target
+representation_map -- diamond2 : mapping_origin
 
-representation_map --> representation_item : mapping_origin
+mapped_item -right-> representation_map : mapping_source
 
 compound_representation_item --> compound_item_definition : item_element
 
-representation_map --> representation : mapped_representation
+representation_map -right-> representation : mapped_representation
 
 @enduml

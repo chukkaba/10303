@@ -1,31 +1,32 @@
-@startuml
+@startuml point
+
 !pragma layout smetana
-skinparam groupInheritance 2
+'skinparam groupInheritance 2
 hide empty members
 
-class geometric_representation_item {
+class geometric_representation_item #White {
   +dim
 }
 
-class point {
+class point #White {
   }
 
-class cartesian_point {
+class cartesian_point #White {
   +coordinates : LIST[1:3] OF length_measure
 }
 
-class point_on_curve {
+class point_on_curve #White {
   +parameter : parameter_value
 }
 
-class curve {
+class curve #White {
 }
 
-class point_on_surface {
+class point_on_surface #White {
   +point_parameter_u : parameter_value
   +point_parameter_v : parameter_value
 }
-class surface {
+class surface #White {
 }
 
 ' Наследование

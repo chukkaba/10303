@@ -1,54 +1,66 @@
-@startuml
-!pragma layout smetana
-skinparam groupInheritance 4
+@startuml measure_value
+
 hide empty members
 
 ' Базовый класс для measure_value
-class measure_value {
+class measure_value #White {
   
 }
 
-' Наследование от measure_value
-
-descriptive_measure -up-|> measure_value
-length_measure -up-|> measure_value
-parameter_value -up-|> measure_value
-plane_angle_measure -up-|> measure_value
-positive_length_measure --|> measure_value
-positive_plane_angle_measure --|> measure_value
-positive_ratio_measure --|> measure_value
-ratio_measure -up-|> measure_value
-
 ' Подклассы measure_value
-class descriptive_measure {
+class descriptive_measure #White {
   value : STRING
 }
 
-class length_measure {
+class length_measure #White {
   value : REAL
 }
 
-class parameter_value {
+class parameter_value #White {
   value : REAL
 }
 
-class plane_angle_measure {
+class plane_angle_measure #White {
   value : REAL
 }
 
-class positive_length_measure {
+class positive_length_measure #White {
   value : non_negative_length_measure
 }
 
-class positive_plane_angle_measure {
+class positive_plane_angle_measure #White {
   value : plane_angle_measure
 }
 
-class positive_ratio_measure {
+class positive_ratio_measure #White {
   value : ratio_measure
 }
 
-class ratio_measure {
+class ratio_measure #White {
   value : REAL
 }
+
+
+'визуальная группировка классов
+<> diamond
+<> diamond2
+<> diamond3
+<> diamond4
+
+diamond -up-|> measure_value
+diamond2 -up-|> diamond
+diamond3 -up-|> diamond2
+diamond4 -up-|> diamond3
+
+' Наследование от measure_value
+descriptive_measure -right-|> diamond
+length_measure -left-|> diamond
+parameter_value -left-|> diamond2
+plane_angle_measure -right-|> diamond2
+positive_length_measure -left-|> diamond3
+positive_plane_angle_measure -right-|> diamond3
+positive_ratio_measure -left-|> diamond4
+ratio_measure -right-|> diamond4
+
+
 @enduml

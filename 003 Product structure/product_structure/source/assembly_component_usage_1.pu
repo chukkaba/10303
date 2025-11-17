@@ -1,15 +1,17 @@
 @startuml
 
 !pragma layout smetana
-skinparam groupInheritance 2
-hide empty members
-top to bottom direction
 
-class assembly_component_usage {
+hide empty members
+
+skinparam Nodesep 150
+
+
+class assembly_component_usage #White {
   reference_designator : OPTIONAL identifier
 } 
 
-class quantified_assembly_component_usage {
+class quantified_assembly_component_usage #White {
   quantity : measure_with_unit
 } 
 
@@ -19,36 +21,39 @@ class quantified_assembly_component_usage {
 
 'class multi_level_reference_designator 
 
-class next_assembly_usage_occurrence
+class next_assembly_usage_occurrence #White 
 
 'class promissory_usage_occurrence
 
-class assembly_component_usage_substitute {
+class assembly_component_usage_substitute #White {
   name              : label
   definition        : OPTIONAL text
 }
 
-class assembly_component_usage_substitute_with_ranking {
+class assembly_component_usage_substitute_with_ranking #White {
   ranking           : INTEGER
   ranking_rationale : text
 }
 
-class product_definition_occurrence_relationship {
+class product_definition_occurrence_relationship #White {
   name             : label
   description      : OPTIONAL text
 }
 
+<> diamond
+diamond -up-|> assembly_component_usage
+
 'наследование
 'specified_higher_usage_occurrence -up-|> one_of
-next_assembly_usage_occurrence -up-|> assembly_component_usage
+next_assembly_usage_occurrence -up- diamond
 'multi_level_reference_designator -up-|> one_of
 'promissory_usage_occurrence -up-|> one_of
 
-quantified_assembly_component_usage -up-|> assembly_component_usage
+quantified_assembly_component_usage -up- diamond
 
-assembly_component_usage -up-> assembly_component_usage_substitute : base
-assembly_component_usage -up-> assembly_component_usage_substitute : substitute
-assembly_component_usage_substitute <|-left- assembly_component_usage_substitute_with_ranking
+assembly_component_usage -left-> assembly_component_usage_substitute : base
+assembly_component_usage -left-> assembly_component_usage_substitute : substitute
+assembly_component_usage_substitute <|-down- assembly_component_usage_substitute_with_ranking
 
 ' связи
 'specified_higher_usage_occurrence --> assembly_component_usage : upper_usage

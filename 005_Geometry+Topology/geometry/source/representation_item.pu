@@ -1,51 +1,53 @@
-@startuml
-!pragma layout smetana
-skinparam groupInheritance 2
-hide empty members
+@startuml representation_item
 
-class representation_context {
+!pragma layout smetana
+'skinparam groupInheritance 2
+hide empty members
+'skinparam Linetype ortho
+
+class representation_context #White {
   }
 
-class geometric_representation_context {
+class geometric_representation_context #White {
   +coordinate_space_dimension : dimension_count
 }
 
-class representation_item {
+class representation_item #White {
   }
 
-class geometric_representation_item {
+class geometric_representation_item #White {
   +dim : dimension_count
 }
 
-class vector {
+class vector #White {
   +orientation : direction
   +magnitude : length_measure
 }
 
-class placement {
+class placement #White {
  
 }
 
-class point {
+class point #White {
   }
 
 
-class curve {
+class curve #White {
  }
 
-class surface {
+class surface #White {
  }
 
-class volume {
+class volume #White {
   }
 
-class geometric_representation_item {
+class geometric_representation_item #White {
 }
 
-class functionally_defined_transformation {
+class functionally_defined_transformation #White {
 }
 
-class cartesian_transformation_operator {
+class cartesian_transformation_operator #White {
   +axis1 : OPTIONAL direction
   +axis2 : OPTIONAL direction
   +local_origin : cartesian_point
@@ -53,14 +55,18 @@ class cartesian_transformation_operator {
   -scl : REAL
 }
 
-class cartesian_transformation_operator_3d {
+class cartesian_transformation_operator_3d #White {
   +axis3 : OPTIONAL direction
   -u : LIST[3:3] OF direction
 }
 
-class cartesian_transformation_operator_2d {
+class cartesian_transformation_operator_2d #White {
   -u : LIST[2:2] OF direction
 }
+
+<> diamond
+<> diamond2
+<> diamond3
 
 ' Наследование
 functionally_defined_transformation <|-- cartesian_transformation_operator
@@ -71,12 +77,16 @@ cartesian_transformation_operator <|-- cartesian_transformation_operator_2d
 representation_context <|-- geometric_representation_context
 representation_item <|-- geometric_representation_item
 
-geometric_representation_item <|-- vector
-geometric_representation_item <|-- placement
-geometric_representation_item <|-- point
-geometric_representation_item <|-- cartesian_transformation_operator
-geometric_representation_item <|-- curve
-geometric_representation_item <|-- surface
-geometric_representation_item <|-- volume
+diamond -up-|> geometric_representation_item
+diamond2 -up- diamond
+diamond3 -up- diamond2
+
+diamond -left- cartesian_transformation_operator
+diamond -right- vector
+diamond2 -left- placement
+diamond2 -right- point
+diamond3 -left- curve
+diamond3 -right- surface
+diamond3 -- volume
 
 @enduml

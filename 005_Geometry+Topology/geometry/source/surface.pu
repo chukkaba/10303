@@ -1,23 +1,26 @@
-@startuml
-!pragma layout smetana
-skinparam groupInheritance 2
-hide empty members
+@startuml surface
 
-class surface {
+'!pragma layout smetana
+'skinparam groupInheritance 2
+hide empty members
+'skinparam Linetype ortho
+skinparam Nodesep 50
+
+class surface #White {
 }
 
-class elementary_surface {
+class elementary_surface #White {
   +position : axis2_placement_3d
 }
 
-class plane {
+class plane #White {
 }
 
-class cylindrical_surface {
+class cylindrical_surface #White {
   +radius : positive_length_measure
 }
 
-class cylindrical_surface {
+class cylindrical_surface #White {
   +radius : length_measure
   +semi_angle : plane_angle_measure
 WHERE
@@ -25,7 +28,7 @@ WHERE
 }
 
 
-class conical_surface {
+class conical_surface #White {
   +radius : length_measure
   +semi_angle : plane_angle_measure
 WHERE
@@ -34,13 +37,13 @@ WHERE
   WR3: semi_angle < PI*0.5;
 }
 
-class spherical_surface {
+class spherical_surface #White {
   +radius : positive_length_measure
   WHERE
   WR1: radius > 0.0;
 }
 
-class toroidal_surface {
+class toroidal_surface #White {
   +major_radius : positive_length_measure
   +minor_radius : positive_length_measure
   WHERE
@@ -48,13 +51,13 @@ class toroidal_surface {
   WR1: minor_radius >= 0.0;
 }
 
-class degenerate_toroidal_surface {
+class degenerate_toroidal_surface #White {
   +select_outer : BOOLEAN
 WHERE
   WR1: major_radius < minor_radius;
 }
 
-class ration_b_spline_surface {
+class ration_b_spline_surface #White {
   + degree_u : count_measure
   + degree_v : count_measure
   + closed_u : BOOLEAN
@@ -68,35 +71,53 @@ class ration_b_spline_surface {
   WR2: degree_v > 0;
 }
 
-class curve_bounded_surface {
+class curve_bounded_surface #White {
   +basis_surface : surface
   +bounds : LIST[1:] of pcurve
 }
 
-class offset_surface {
+class offset_surface #White {
   +basis_surface : surface
   +distance : length_measure
   +self_intersect : LOGICAL
 }
 
-class surface_replica {
+class surface_replica #White {
   +basis_surface : surface
   +transformation : cartesian_transformation_operator
 }
 
-' Наследование
-surface <|-- bounded_surface
-surface <|-- elementary_surface
-surface <|-- ration_b_spline_surface
-surface <|-- curve_bounded_surface
-surface <|-- offset_surface
-surface <|-- surface_replica
+class bounded_surface #White {
 
-elementary_surface <|-- plane
-elementary_surface <|-- cylindrical_surface
-elementary_surface <|-- conical_surface
-elementary_surface <|-- spherical_surface
-elementary_surface <|-- toroidal_surface
+}
+
+<> diamond
+<> diamond2
+<> diamond3
+<> diamond4
+<> diamond5
+
+
+' Наследование
+diamond -up-|> surface
+diamond2 -up- diamond
+diamond3 -up- diamond2
+
+diamond -left- elementary_surface
+diamond -right- ration_b_spline_surface
+diamond2 -right- bounded_surface
+diamond2 -left- curve_bounded_surface
+diamond3 -- offset_surface
+diamond3 -- surface_replica
+
+diamond4 -up-|> elementary_surface
+diamond5 -up- diamond4
+
+diamond5 -left- cylindrical_surface
+diamond5 -right- conical_surface
+diamond4 -right- plane
+diamond4 -left- spherical_surface
+diamond5 -- toroidal_surface
 
 toroidal_surface <|-- degenerate_toroidal_surface
 
