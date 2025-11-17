@@ -1,0 +1,25 @@
+@startuml
+
+'!pragma layout smetana
+'skinparam groupInheritance 2
+hide empty members
+'top to bottom direction
+
+class assembly_component_usage {
+  reference_designator : OPTIONAL identifier
+} 
+
+class quantified_assembly_component_usage {
+  quantity : measure_with_unit
+} 
+
+class multi_level_reference_designator 
+
+
+multi_level_reference_designator -up-|> assembly_component_usage
+
+quantified_assembly_component_usage -up-|> assembly_component_usage
+
+multi_level_reference_designator --> next_assembly_usage_occurrence : location LIST[1:?]
+multi_level_reference_designator --> product_definition : related (leaf)
+multi_level_reference_designator --> product_definition : relating (root)

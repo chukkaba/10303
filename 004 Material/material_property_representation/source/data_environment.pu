@@ -1,0 +1,22 @@
+@startuml
+
+class data_environment {
+  name : label
+  description : text
+}
+
+class data_environment_relationship {
+  name : label
+  description : text
+  }
+  
+enum characterized_property_representation {
+	dimensional_characteristic_representation
+	property_definition_representation
+}
+
+data_environment_relationship --> data_environment : relating_data_environment
+data_environment_relationship --> data_environment : related_data_environment
+
+data_environment --> characterized_property_representation : elements SET [1:?]
+  @enduml

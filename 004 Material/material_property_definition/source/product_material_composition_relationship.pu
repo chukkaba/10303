@@ -1,0 +1,15 @@
+
+class product_material_composition_relationship {
+  class : label
+  composition_basis : label
+  determination_method : text
+}
+
+enum characterized_product_composition_value {
+  measure_with_unit
+  maths_value_with_unit
+}
+
+product_material_composition_relationship --> characterized_product_composition_value : constituent_amount SET [1:?]
+
+product_material_composition_relationship -up-|> product_definition_relationship

@@ -1,0 +1,13 @@
+@startuml
+
+class product_definition_occurence_relationship {
+    name : label
+    description : text
+}
+
+package product_definition_schema {
+    class product_definition
+}
+
+product_definition_occurence_relationship -up-> assembly_component_usage : occurence_usage
+product_definition_occurence_relationship -down-> product_definition : occurence

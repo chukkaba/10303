@@ -5,40 +5,44 @@
 hide empty members
 
 
-class product_definition_relationship
+package product_definition_schema {
+  class product_definition_relationship
+  class product_definition
+  }
+product_definition_relationship -right-> product_definition : relating_product_definition
+product_definition_relationship -right-> product_definition : related_product_definition
+
+class product_definition_usage
+product_definition_usage -up-|> product_definition_relationship
 
 class assembly_component_usage {
   reference_designator : OPTIONAL identifier
 } 
-
-class make_from_usage_option {
-  ranking           : INTEGER
-  ranking_rationale : text
-  quantity          : measure_with_unit
-} 
-
-'class make_from_usage_option_group
-
-
-
-class product_definition_usage
-
-class product_definition_usage_relationship
-
-'product_definition_occurrence_reference_with_local_representation -up-|> generic_product_definition_reference
-
-' Связи
-
-'make_from_usage_option_group -up-> make_from_usage_option : members S[2:?]
-product_definition_usage_relationship -right-> product_definition_usage : relating
-product_definition_usage_relationship -right-> product_definition_usage : related
-
-
-' Наследование 
-make_from_usage_option -up-|> product_definition_usage
-
 assembly_component_usage -up-|> product_definition_usage
-product_definition_usage -up-|> product_definition_relationship
-product_definition_usage_relationship -up-|> product_definition_relationship_relationship
+
+
+class quantified_assembly_component_usage {
+  quantity : measure_with_unit
+} 
+quantified_assembly_component_usage -up-|> assembly_component_usage
+
+specified_higher_usage_occurrence -up-|> assembly_component_usage
+specified_higher_usage_occurrence --> assembly_component_usage : upper_usage
+specified_higher_usage_occurrence --> ext_assembly_usage_occurrence : next_usage
+
+class next_assembly_usage_occurrence {
+product_definition_occurence_id : identifier
+}
+next_assembly_usage_occurrence -up-|> assembly_component_usage
+
+
+class multi_level_reference_designator 
+multi_level_reference_designator -up-|> assembly_component_usage
+
+class promissory_usage_occurrence
+promissory_usage_occurrence-up-|> assembly_component_usage
+
+product_definition_usage_relationship -right-> product_definition_usage : retating
+product_definition_usage_relationship -right-> product_definition_usage : retated
 
 @enduml

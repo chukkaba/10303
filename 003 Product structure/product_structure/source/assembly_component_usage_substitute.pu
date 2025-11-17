@@ -1,0 +1,26 @@
+@startuml
+
+!pragma layout smetana
+skinparam groupInheritance 2
+hide empty members
+top to bottom direction
+
+class assembly_component_usage {
+  reference_designator : OPTIONAL identifier
+} 
+
+class assembly_component_usage_substitute {
+  name              : label
+  definition        : OPTIONAL text
+}
+
+class assembly_component_usage_substitute_with_ranking {
+  ranking           : INTEGER
+  ranking_rationale : text
+}
+
+
+
+assembly_component_usage <-left- assembly_component_usage_substitute : base
+assembly_component_usage <-left- assembly_component_usage_substitute : substitute
+assembly_component_usage_substitute <|-down- assembly_component_usage_substitute_with_ranking

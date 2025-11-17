@@ -1,46 +1,48 @@
 @startuml
 
-class data_environment {
-  name : label
-  description : text
-}
-
-class data_environment_relationship {
-  name : label
-  description : text
-  
-}
-
-abstract class property_definition_representation {
-}
 
 class material_property_representation {
  
 }
 
-abstract class dimensional_characteristic_representation {
-}
+'abstract class dimensional_characteristic_representation {
+'}
 
-class material_dimensional_characteristic_representation {
+'class material_dimensional_characteristic_representation {
   
-}
+'}
 
-enum characterized_property_representation {
-	dimensional_characteristic_representation
-	property_definition_representation
+package product_property_definition {
+  abstract class property_definition_representation
+  class representation
+  class property_definition
+  enum characterized_definition {
+    product_definition
+    product_definition_relationship
+  }
+  class property_definition_relationship
 }
 
 ' Связи между классами
 
-data_environment_relationship --> data_environment : relating_data_environment
-data_environment_relationship --> data_environment : related_data_environment
 
-material_property_representation --|> property_definition_representation
+
+material_property_representation -up-|> property_definition_representation
 material_property_representation --> data_environment : dependent_environment
 
-material_dimensional_characteristic_representation --|> dimensional_characteristic_representation
-material_dimensional_characteristic_representation --> data_environment : dependent_environment
+property_definition_representation -up-> representation : used_representation
+property_definition_representation -right-> property_definition
 
-data_environment --> characterized_property_representation : elements SET [1:?]
+property_definition_relationship -down-> property_definition : relating_property_definition
+property_definition_relationship -down-> property_definition : related_property_definition
+
+property_definition -right-> characterized_definition : definition
+
+material_property -up-|> property_definition
+
+'material_dimensional_characteristic_representation -up-|> dimensional_characteristic_representation
+'material_dimensional_characteristic_representation --> data_environment : dependent_environment
+
+
 
 @enduml

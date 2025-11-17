@@ -1,0 +1,21 @@
+@startuml
+
+'!pragma layout smetana
+'skinparam groupInheritance 2
+hide empty members
+'top to bottom direction
+
+class assembly_component_usage {
+  reference_designator : OPTIONAL identifier
+} 
+
+class quantified_assembly_component_usage {
+  quantity : measure_with_unit
+} 
+
+class promissory_usage_occurrence
+
+promissory_usage_occurrence -up-|> assembly_component_usage
+
+quantified_assembly_component_usage -up-|> assembly_component_usage
+

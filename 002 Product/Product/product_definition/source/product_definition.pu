@@ -17,7 +17,6 @@ class product_definition_relationship {
   +name : label
   +description : OPTIONAL text
   +relating_product_definition : product_definition_or_reference
-  +related_product_definition : product_definition_or_reference
 }
 
 

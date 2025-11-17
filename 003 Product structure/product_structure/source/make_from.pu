@@ -7,6 +7,8 @@ hide empty members
 
 class product_definition_relationship
 
+class product_definition_usage
+
 'class assembly_component_usage {
  ' reference_designator : OPTIONAL identifier
 '} 
@@ -21,7 +23,7 @@ class make_from_usage_option_group
 
 
 
-class product_definition_usage
+
 
 class product_definition_usage_relationship
 

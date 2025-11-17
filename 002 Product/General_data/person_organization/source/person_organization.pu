@@ -1,0 +1,51 @@
+@startuml
+
+' Объявляем сущности (ENTITY)
+
+class organization {
+  id : OPTIONAL identifier;
+  name : label;
+  description : OPTIONAL text;
+}
+
+class organization_relationship {
+  name : label;
+  description : OPTIONAL text;
+}
+
+class organization_role {
+  name : label;
+}
+
+
+class organizational_project {
+  name : label;
+  description : OPTIONAL text;
+  }
+
+
+class person {
+  id : identifier;
+  last_name : OPTIONAL label;
+  first_name : OPTIONAL label;
+  middle_names : OPTIONAL LIST [1:?] OF label;
+}
+
+class person_and_organization {
+  the_person : person;
+  the_organization : organization;
+}
+
+' Основные связи между классами
+
+organization <--  organization_relationship : relating_organization
+organization <-- organization_relationship : related_organization
+
+organization --> organization_role : SET [0:?]
+
+organizational_project --> organization : responsible_organizations SET [1:?]
+
+person_and_organization --> person : the_person
+person_and_organization --> organization : the_organization
+
+@enduml
