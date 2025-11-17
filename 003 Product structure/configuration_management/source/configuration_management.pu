@@ -1,38 +1,41 @@
-@startuml
+@startuml configuration_management
 
-class configuration_design_item {
+hide empty members
+
+class configuration_design_item #White {
 }
 
-class configurable_item {
-  id : identifier
-  name : label
-  description : text?
-  item_concept : product_concept
-  purpose : label?
+class configurable_item #White {
+  + id : identifier
+  + name : label
+  - description : text?
+  +item_concept : product_concept
+  - purpose : label?
 }
 
-class configuration_design {
-  name : label
-  description : text?
+class configuration_design #White {
+  + name : label
+  + description : text?
 }
 
-class configuration_effectivity {
+class configuration_effectivity #White {
 }
 
-class configuration_item {
-  id : identifier
-  name : label
-  description : text?
-  
-  purpose : label?
+class configuration_item #White {
+  + id : identifier
+  + name : label
+  - description : text?
+  - purpose : label?
+  + item_concept : product_concept
 }
 
-class configuration_item_relationship {
-  name : label
-  description : text?
+class configuration_item_relationship #White {
+  +name : label
+  -description : text?
+
 }
 
-enum configuration_design_item {
+enum configuration_design_item #White {
    product_definition
    product_definition_formation
    product_definition_occurrence
@@ -51,7 +54,7 @@ configuration_design --> configuration_design_item : design
 
 configuration_effectivity --> configuration_design : configuration
 
-configuration_item_relationship --> configuration_item : relating_configuration_item
-configuration_item_relationship --> configuration_item : related_configuration_item
+configuration_item_relationship -left-> configuration_item : relating_configuration_item
+configuration_item_relationship -left-> configuration_item : related_configuration_item
 
 @enduml

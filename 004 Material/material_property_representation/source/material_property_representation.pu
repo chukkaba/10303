@@ -1,17 +1,46 @@
-@startuml
+@startuml material_property_representation
 
+<<<<<<< HEAD
+=======
+!pragma layout smetana
+hide empty members
+'skinparam Linetype ortho
+skinparam Nodesep 170
 
-class material_property_representation {
+class data_environment #White {
+  name : label
+  description : text
+}
+
+class data_environment_relationship #White {
+  + name : label
+  + description : text
+  
+}
+
+abstract property_definition_representation #White {
+}
+>>>>>>> 5372eaa5692238982fe91d2dab64fedf66a01436
+
+class material_property_representation #White {
  
 }
 
+<<<<<<< HEAD
 'abstract class dimensional_characteristic_representation {
 '}
 
 'class material_dimensional_characteristic_representation {
+=======
+abstract dimensional_characteristic_representation #White {
+}
+
+class material_dimensional_characteristic_representation #White {
+>>>>>>> 5372eaa5692238982fe91d2dab64fedf66a01436
   
 '}
 
+<<<<<<< HEAD
 package product_property_definition {
   abstract class property_definition_representation
   class representation
@@ -21,10 +50,16 @@ package product_property_definition {
     product_definition_relationship
   }
   class property_definition_relationship
+=======
+enum characterized_property_representation #White {
+	dimensional_characteristic_representation
+	property_definition_representation
+>>>>>>> 5372eaa5692238982fe91d2dab64fedf66a01436
 }
 
 ' Связи между классами
 
+<<<<<<< HEAD
 
 
 material_property_representation -up-|> property_definition_representation
@@ -43,6 +78,16 @@ material_property -up-|> property_definition
 'material_dimensional_characteristic_representation -up-|> dimensional_characteristic_representation
 'material_dimensional_characteristic_representation --> data_environment : dependent_environment
 
+=======
+data_environment_relationship -right-> data_environment : relating_data_environment
+data_environment_relationship --> data_environment : related_data_environment
+
+material_property_representation -up-|> property_definition_representation
+material_property_representation --> data_environment : dependent_environment
+
+material_dimensional_characteristic_representation -up-|> dimensional_characteristic_representation
+material_dimensional_characteristic_representation --> data_environment : dependent_environment
+>>>>>>> 5372eaa5692238982fe91d2dab64fedf66a01436
 
 
 @enduml

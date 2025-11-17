@@ -1,67 +1,76 @@
-@startuml
-skinparam groupInheritance 2
-!pragma layout smetana
+@startuml curve
+
 hide empty members
+skinparam Linetype ortho
 
-class geometric_representation_item {
+class geometric_representation_item #White {
 }
 
-class curve {
+class curve #White {
 }
 
-class line {
+class line #White {
   +pnt : cartesian_point
   +dir : vector
 }
 
-class ellipse {
+class ellipse #White {
   +position : axis2_placement
   +major_radius : length_measure
   +minor_radius : length_measure
 }
 
-class polyline {
+class polyline #White {
   + base_points : LIST[1:] OF cartesian_point
 }
 
-class rational_b_spline_curve {
+class rational_b_spline_curve #White {
   + base_points : LIST[1:] OF cartesian_point
   + order : count_measure
   + knots : LIST[1:] OF ratio_measure
   + weights : LIST[1:] OF ratio_measure
 }
 
-class direction_inverted_curve {
+class direction_inverted_curve #White {
   + basis_curve : curve
 }
 
-class trimmed_curve {
+class trimmed_curve #White {
   + basis_curve : curve
   + trim_1 : point
   + trim_2 : point
 }
 
-class pcurve {
+class pcurve #White {
   +basis_surface : surface
   +reference_to_curve : definitional_representation
 }
 
-class curve_replica {
+class curve_replica #White {
   +parent_curve : curve
   +transformation : cartesian_transformation_operator
 }
 
+<> diamond 
+<> diamond2
+<> diamond3
+<> diamond4
 
 ' Наследование
 geometric_representation_item <|-- curve
 
-curve <|-- line
-curve <|-- ellipse
-curve <|-- polyline
-curve <|-- rational_b_spline_curve
-curve <|-- direction_inverted_curve
-curve <|-- trimmed_curve
-curve <|-- pcurve
-curve <|-- curve_replica
+diamond -up-|> curve
+diamond2 -up- diamond
+diamond3 -up- diamond2
+diamond4 -up-diamond3
+
+diamond -left- line
+diamond -right- ellipse
+diamond2 -left- polyline
+diamond2 -right- rational_b_spline_curve
+diamond3 -left- direction_inverted_curve
+diamond3 -right- trimmed_curve
+diamond4 -left- pcurve
+diamond4 -right- curve_replica
 
 @enduml

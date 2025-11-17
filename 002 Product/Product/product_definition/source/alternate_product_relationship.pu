@@ -1,18 +1,22 @@
-@startuml
-!pragma layout smetana
-skinparam groupInheritance 2
+@startuml alternate_product_relationship
+
+'!pragma layout smetana
+'skinparam groupInheritance 2
 hide empty members
-top to bottom direction
+skinparam linetype ortho
+skinparam Nodesep 100
 
 
-class alternate_product_relationship {
-  name        : label
-  definition  : OPTIONAL text
-  basis       : text
+class alternate_product_relationship #White {
+  + name        : label
+  - definition  : OPTIONAL text
+  + basis       : text
 }
-class product
+class product #White
 
 
 
-alternate_product_relationship -right-> product : base
-alternate_product_relationship -right-> product : alternate
+alternate_product_relationship -right---> product : base
+alternate_product_relationship -right---> product : alternate
+
+@enduml

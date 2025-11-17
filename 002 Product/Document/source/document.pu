@@ -1,55 +1,59 @@
 @startuml
 
-class document {
+hide empty methods
+skinparam linetype ortho
+skinparam nodesep 200
+
+class document #White {
   +id : identifier
   +name : label
   -description : text
   +kind : document_type
 }
 
-class document_product_association {
+class document_product_association #White {
 }
 
-class document_relationship {
-name : label
-description : text
+class document_relationship #White {
++ name : label
+- description : text
 }
 
-class document_representation_type {
+class document_representation_type #White {
     name : label
 }
 
-class document_type {
+class document_type #White {
   product_data_type : label
 }
 
-class document_usage_constraint {
-    subject_element : label
-    subject_element_value : text
+class document_usage_constraint #White {
+    + subject_element : label
+    + subject_element_value : text
 }
 
-class document_with_class {
+class document_with_class #White {
   class : identifier
 }
 
-enum product_or_formation_or_definition {
+enum product_or_formation_or_definition #White {
     product
     product_definition
     product_definition_formation
 }
 
-document <|-- document_with_class
+document <|-down- document_with_class
 
-document --> document_type : kind
+document -up-> document_type : kind
 
-document_product_association --> document : relating_document
+document_product_association -up-> document : relating_document
 document_product_association --> product_or_formation_or_definition : related_product
 
-document_relationship --> document : relating_document
-document_relationship --> document : related_document
+document_relationship -right-> document : relating_document
+document_relationship -right-> document : related_document
 
-document_representation_type --> document : represented_document
+document_representation_type -down-> document : represented_document
 
-document_usage_constraint --> document : source
+document_usage_constraint -left-> document : source
 
 @enduml

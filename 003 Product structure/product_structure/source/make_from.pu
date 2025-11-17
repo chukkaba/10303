@@ -1,11 +1,12 @@
-@startuml
+@startuml make_from
 
-!pragma layout smetana
-'skinparam groupInheritance 2
+'!pragma layout smetana
+skinparam groupInheritance 2
 hide empty members
+skinparam linetype ortho
 
 
-class product_definition_relationship
+class product_definition_relationship #White
 
 class product_definition_usage
 
@@ -13,27 +14,37 @@ class product_definition_usage
  ' reference_designator : OPTIONAL identifier
 '} 
 
-class make_from_usage_option {
-  ranking           : INTEGER
-  ranking_rationale : text
-  quantity          : measure_with_unit
+class make_from_usage_option #White {
+  + ranking           : INTEGER
+  + ranking_rationale : text
+  + quantity          : measure_with_unit
 } 
 
-class make_from_usage_option_group
+class make_from_usage_option_group #White {
+
+}
 
 
 
+<<<<<<< HEAD
 
+=======
+class product_definition_usage #White {
+>>>>>>> 5372eaa5692238982fe91d2dab64fedf66a01436
 
-class product_definition_usage_relationship
+}
+
+class product_definition_usage_relationship #White 
+
+class product_definition_relationship_relationship #White 
 
 'product_definition_occurrence_reference_with_local_representation -up-|> generic_product_definition_reference
 
 ' Связи
 
 make_from_usage_option_group -up-> make_from_usage_option : members S[2:?]
-product_definition_usage_relationship -right-> product_definition_usage : relating
-product_definition_usage_relationship -right-> product_definition_usage : related
+product_definition_usage_relationship -up-> product_definition_usage : relating
+product_definition_usage_relationship -up-> product_definition_usage : related
 
 
 ' Наследование 
@@ -41,6 +52,7 @@ make_from_usage_option -up-|> product_definition_usage
 
 'assembly_component_usage -up-|> product_definition_usage
 product_definition_usage -up-|> product_definition_relationship
-product_definition_usage_relationship -up-|> product_definition_relationship_relationship
+product_definition_usage_relationship -up-|> product_definition_relationship_relationship 
+
 
 @enduml

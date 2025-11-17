@@ -1,25 +1,86 @@
-@startuml
+@startuml material_property_definition
 
+<<<<<<< HEAD
 class material_designation {
   name : label
+=======
+'!pragma layout smetana
+hide empty members
+skinparam Linetype ortho
+
+
+class generic_property_relationship #White {
+  + name : label
+  + description : text
+  + relation_type : STRING
 }
 
-class material_designation_characterization {
-  name : label
-  description : text
+class material_designation #White {
+  + name : label
+>>>>>>> 5372eaa5692238982fe91d2dab64fedf66a01436
 }
 
+class material_designation_characterization #White {
+  + name : label
+  + description : text
+}
+
+<<<<<<< HEAD
 enum characterized_material_property {
+=======
+abstract class property_definition #White {
+}
+
+class material_property #White {
+}
+
+class product_material_composition_relationship #White {
+  + class : label
+  + composition_basis : label
+  + determination_method : text
+}
+
+class property_definition_relationship #White {
+  + name : label
+  + description : text
+}
+
+class product_definition_relationship #White {
+
+}
+
+class characterized_definition #White {
+
+}
+
+enum characterized_material_property #White {
+>>>>>>> 5372eaa5692238982fe91d2dab64fedf66a01436
   material_property_representation
   product_material_composition_relationship
 }
 
 ' Связи между классами
 
+<<<<<<< HEAD
 material_designation_characterization -up-> material_designation : designation
+=======
+generic_property_relationship -up-> property_definition : relating
+generic_property_relationship -up-> property_definition : related
+
+material_designation_characterization --> material_designation : designation
+>>>>>>> 5372eaa5692238982fe91d2dab64fedf66a01436
 material_designation_characterization --> characterized_material_property : property
 
 
+<<<<<<< HEAD
 material_designation -up-> characterized_definition : definitions SET [1:?]
+=======
+material_property -up-|> property_definition
+
+product_material_composition_relationship -up-|> product_definition_relationship
+
+property_definition_relationship --> property_definition : relating_property_definition
+property_definition_relationship --> property_definition : related_property_definition
+>>>>>>> 5372eaa5692238982fe91d2dab64fedf66a01436
 
 @enduml

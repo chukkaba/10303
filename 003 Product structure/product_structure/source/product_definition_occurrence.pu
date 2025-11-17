@@ -1,29 +1,30 @@
-@startuml
-!pragma layout smetana
-skinparam groupInheritance 2
+@startuml product_definition_occurrence
+
+'!pragma layout smetana
+'skinparam groupInheritance 2
 hide empty members
-top to bottom direction
+skinparam linetype ortho
 
 
-class product_definition_occurrence {
+class product_definition_occurrence #White {
   id : identifier
   name : OPTIONAL label
   description : OPTIONAL text
   quantity : OPTIONAL measure_with_unit
 } 
 
-class product_definition_occurrence_reference_with_local_representation
+class product_definition_occurrence_reference_with_local_representation #White 
 
-class product_definition_specified_occurrence
+class product_definition_specified_occurrence #White 
 
-class product_definition_occurrence_reference {
+class product_definition_occurrence_reference #White  {
   product_occurrence_id : identifier
 } 
 
-class product_definition_reference
+class product_definition_reference #White 
 
 'наследование
-product_definition_occurrence_reference_with_local_representation -down-|> product_definition_occurrence
+product_definition_occurrence_reference_with_local_representation -up-|> product_definition_occurrence
 product_definition_specified_occurrence -up-|> product_definition_occurrence
 product_definition_occurrence_reference -up-|> product_definition_reference
 

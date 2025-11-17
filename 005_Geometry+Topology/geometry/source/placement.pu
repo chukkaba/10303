@@ -1,27 +1,28 @@
-@startuml
+@startuml placement
+
 !pragma layout smetana
-skinparam groupInheritance 2
+'skinparam groupInheritance 2
 hide empty members
 
-class geometric_representation_item {
+class geometric_representation_item #White {
   +dim
 }
 
-class placement {
+class placement #White {
   +location : cartesian_point
 }
 
-class axis1_placement {
+class axis1_placement #White {
   +axis : OPTIONAL direction
   +z : direction
 }
 
-class axis2_placement_2d {
+class axis2_placement_2d #White {
   +ref_direction : OPTIONAL direction
   +p : LIST[2:2] OF direction
 }
 
-class axis2_placement_3d {
+class axis2_placement_3d #White {
   +axis : OPTIONAL direction
   +ref_direction : OPTIONAL direction
   +p : LIST[3:3] OF direction

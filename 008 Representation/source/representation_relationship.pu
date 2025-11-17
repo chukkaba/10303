@@ -1,49 +1,64 @@
-abstract class representation_relationship {
-  name : label
-  description : OPTIONAL text
-  rep_1 : representation_or_representation_reference
-  rep_2 : representation_or_representation_reference
+@startuml representation_relationship
+
+hide empty members
+skinparam Linetype polyline
+
+abstract class representation_relationship #White {
+  +name : label
+  -description : OPTIONAL text
+  +rep_1 : representation_or_representation_reference
+  +rep_2 : representation_or_representation_reference
 }
 
-class definitional_representation_relationship {
+class definitional_representation_relationship #White {
 }
 
-class definitional_representation_relationship_with_same_context {
+class definitional_representation_relationship_with_same_context #White {
 }
 
-class functionally_defined_transformation {
-  name : label
-  description : OPTIONAL text
+class functionally_defined_transformation #White {
+  +name : label
+  -description : OPTIONAL text
 }
 
-class item_defined_transformation {
-  name : label
-  description : OPTIONAL text
-  transform_item_1 : representation_item
-  transform_item_2 : representation_item
+class item_defined_transformation #White {
+  +name : label
+  -description : OPTIONAL text
+  +transform_item_1 : representation_item
+  +transform_item_2 : representation_item
 }
 
-class representation_relationship_with_transformation {
+class representation_relationship_with_transformation #White {
   
 }
 
-enum transformation {
+class representation_item #White {
+
+}
+
+class representation #White {
+
+}
+
+enum transformation #White {
   item_defined_transformation
   functionally_defined_transformation
 }
 
 ' Связи между классами
 
-definitional_representation_relationship --|> representation_relationship
-definitional_representation_relationship_with_same_context --|> definitional_representation_relationship
-representation_relationship_with_transformation --|> representation_relationship
+definitional_representation_relationship -up-|> representation_relationship
+definitional_representation_relationship_with_same_context -up-|> definitional_representation_relationship
+representation_relationship_with_transformation -up-|> representation_relationship
 
 
-item_defined_transformation --> representation_item : transform_item_1
-item_defined_transformation --> representation_item : transform_item_2
+item_defined_transformation -right-> representation_item : transform_item_1
+item_defined_transformation -right-> representation_item : transform_item_2
 
 
-representation_relationship --> representation : rep_1
-representation_relationship --> representation : rep_2
+representation_relationship -left-> representation : rep_1
+representation_relationship -left-> representation : rep_2
 
 representation_relationship_with_transformation --> transformation : transformation_operator
+
+@enduml
